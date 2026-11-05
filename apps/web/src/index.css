@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  --color-parchment: #f4ecd8;
+  --color-ink: #2b2118;
+  --color-moss: #4f5d2f;
+  --font-serif: "Georgia", serif;
+}
+
+body {
+  background: var(--color-parchment);
+  color: var(--color-ink);
+}

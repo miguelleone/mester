@@ -47,3 +47,9 @@ apps/
 
 Para proteger uma rota: `preHandler: authenticate` (qualquer usuário logado) ou `preHandler: requireRole('gestor')` (admin sempre passa), de `src/auth/guards.ts`.
 - `GET /spaces?lat=&lng=&radiusKm=`: lista espaços, com filtro opcional por raio (PostGIS `ST_DWithin`)
+- `GET /spaces/:id`: detalhe do espaço com o histórico de reportes (autor e data)
+- `POST /spaces` (logado): reporta um espaço novo `{ name, type, lat, lng, description, isPublic? }`; cria o espaço com status `reportado` e o primeiro reporte
+- `POST /spaces/:id/reports` (logado): reforça o reporte de um espaço existente `{ description }`
+- `PATCH /spaces/:id/status` (gestor ou admin): `{ status }` (`reportado`, `com_proposta`, `em_obra`, `adotado`)
+
+No front, o detalhe de um espaço tem link próprio: `/#/espacos/<id>`.

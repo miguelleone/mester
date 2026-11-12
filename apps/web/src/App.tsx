@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchSpaces, type Space } from './api'
 import { SpacesMap } from './components/SpacesMap'
+import { AuthPanel } from './components/AuthPanel'
 
 export default function App() {
   const [spaces, setSpaces] = useState<Space[]>([])
@@ -12,9 +13,12 @@ export default function App() {
 
   return (
     <div className="flex h-dvh flex-col">
-      <header className="border-b border-ink/20 px-4 py-3">
-        <h1 className="font-serif text-2xl tracking-wide">Mester</h1>
-        <p className="text-sm opacity-70">Espaços da cidade à espera de cuidado</p>
+      <header className="flex items-center justify-between gap-4 border-b border-ink/20 px-4 py-3">
+        <div>
+          <h1 className="font-serif text-2xl tracking-wide">Mester</h1>
+          <p className="text-sm opacity-70">Espaços da cidade à espera de cuidado</p>
+        </div>
+        <AuthPanel />
       </header>
       {error && <p className="px-4 py-2 text-sm text-red-700">{error}</p>}
       <main className="flex-1">

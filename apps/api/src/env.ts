@@ -10,6 +10,8 @@ export const env = {
   databaseUrl: process.env.DATABASE_URL ?? 'postgres://mester:mester@localhost:5432/mester',
   port: Number(process.env.PORT ?? 3333),
   jwtSecret: process.env.JWT_SECRET ?? '',
+  // Pasta das fotos enviadas (padrão: apps/api/uploads)
+  uploadsDir: process.env.UPLOADS_DIR ?? fileURLToPath(new URL('../uploads', import.meta.url)),
 }
 
 if (!env.jwtSecret) {

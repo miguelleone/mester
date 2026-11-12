@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { createSpace, spaceTypeLabel, type SpaceDetail, type SpaceType } from '../api'
 import { useAuth } from '../auth'
 import { field } from './ui'
+import { PhotoPicker } from './PhotoPicker'
 
 type Props = {
   draft: { lat: number; lng: number } | null
@@ -13,6 +14,8 @@ export function ReportForm({ draft, onCreated, onCancel }: Props) {
   const { token } = useAuth()
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [photos, setPhotos] = useState<string[]>([])
+  const [uploading, setUploading] = useState(false)
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -26,6 +29,7 @@ export function ReportForm({ draft, onCreated, onCancel }: Props) {
         type: f.get('type') as SpaceType,
         isPublic: f.get('isPublic') === 'on',
         description: String(f.get('description')),
+        photos,
         ...draft,
       })
       onCreated(space)
@@ -62,13 +66,17 @@ export function ReportForm({ draft, onCreated, onCancel }: Props) {
           className={field}
         />
       </label>
+      <div className="flex flex-col gap-1 text-sm">
+        Fotos
+        <PhotoPicker value={photos} onChange={setPhotos} onBusy={setUploading} />
+      </div>
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" name="isPublic" defaultChecked />
         É um espaço público
       </label>
       {error && <p className="text-sm text-red-700">{error}</p>}
       <div className="flex gap-2">
-        <button disabled={busy || !draft} className="rounded bg-moss px-3 py-1.5 text-sm text-parchment disabled:opacity-50">
+        <button disabled={busy || uploading || !draft} className="rounded bg-moss px-3 py-1.5 text-sm text-parchment disabled:opacity-50">
           {busy ? 'Enviando...' : 'Enviar reporte'}
         </button>
         <button type="button" onClick={onCancel} className="px-3 py-1.5 text-sm underline">Cancelar</button>

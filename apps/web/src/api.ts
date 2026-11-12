@@ -31,6 +31,7 @@ export type NewSpace = {
   lat: number
   lng: number
   description: string
+  photos: string[]
 }
 
 export const spaceTypeLabel: Record<SpaceType, string> = {
@@ -74,8 +75,21 @@ export const fetchSpace = (id: string) => request<SpaceDetail>(`/spaces/${id}`)
 export const createSpace = (token: string, input: NewSpace) =>
   request<SpaceDetail>('/spaces', { method: 'POST', token, body: JSON.stringify(input) })
 
-export const addReport = (token: string, id: string, description: string) =>
-  request<SpaceDetail>(`/spaces/${id}/reports`, { method: 'POST', token, body: JSON.stringify({ description }) })
+export const addReport = (token: string, id: string, description: string, photos: string[]) =>
+  request<SpaceDetail>(`/spaces/${id}/reports`, { method: 'POST', token, body: JSON.stringify({ description, photos }) })
+
+// A API devolve caminhos como /uploads/x.jpg; o front fala com ela pelo proxy /api
+export const photoUrl = (path: string) => `/api${path}`
+
+export async function uploadPhoto(token: string, file: File): Promise<string> {
+  const body = new FormData()
+  body.append('file', file)
+  const res = await fetch('/api/uploads', { method: 'POST', headers: { authorization: `Bearer ${token}` }, body })
+  const data = await res.json().catch(() => ({}))
+  if (res.status === 413) throw new Error('A imagem pode ter no máximo 5 MB')
+  if (!res.ok) throw new Error(data.message ?? 'Falha ao enviar a foto')
+  return data.url
+}
 
 export const updateStatus = (token: string, id: string, status: SpaceStatus) =>
   request<SpaceDetail>(`/spaces/${id}/status`, { method: 'PATCH', token, body: JSON.stringify({ status }) })

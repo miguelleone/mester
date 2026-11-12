@@ -4,6 +4,7 @@ import { asc, eq, sql as dsql } from 'drizzle-orm'
 import { db } from '../db/client.js'
 import { spaces, reports, users, spaceType, spaceStatus } from '../db/schema.js'
 import { authenticate, requireRole } from '../auth/guards.js'
+import { photoPath } from './uploads.js'
 
 const spaceOut = z.object({
   id: z.string(),
@@ -31,6 +32,7 @@ const spaceDetailOut = spaceOut.extend({
 const errorOut = z.object({ message: z.string() })
 const reportBody = z.object({
   description: z.string().trim().min(10).max(2000),
+  photos: z.array(photoPath).max(5).default([]),
 })
 
 type SpaceRow = typeof spaces.$inferSelect
@@ -106,12 +108,12 @@ export const spacesRoutes: FastifyPluginAsyncZod = async (app) => {
       response: { 201: spaceDetailOut },
     },
   }, async (req, reply) => {
-    const { name, type, isPublic, lat, lng, description } = req.body
+    const { name, type, isPublic, lat, lng, description, photos } = req.body
     const id = await db.transaction(async (tx) => {
       const [s] = await tx.insert(spaces)
         .values({ name, type, isPublic, location: { x: lng, y: lat } })
         .returning({ id: spaces.id })
-      await tx.insert(reports).values({ spaceId: s!.id, authorId: req.user.sub, description })
+      await tx.insert(reports).values({ spaceId: s!.id, authorId: req.user.sub, description, photos })
       return s!.id
     })
     return reply.code(201).send((await loadDetail(id))!)
@@ -128,7 +130,7 @@ export const spacesRoutes: FastifyPluginAsyncZod = async (app) => {
   }, async (req, reply) => {
     const [s] = await db.select({ id: spaces.id }).from(spaces).where(eq(spaces.id, req.params.id))
     if (!s) return reply.code(404).send({ message: 'Espaço não encontrado' })
-    await db.insert(reports).values({ spaceId: s.id, authorId: req.user.sub, description: req.body.description })
+    await db.insert(reports).values({ spaceId: s.id, authorId: req.user.sub, description: req.body.description, photos: req.body.photos })
     return reply.code(201).send((await loadDetail(s.id))!)
   })
 

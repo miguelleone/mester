@@ -1,10 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import {
-  addReport, fetchSpace, updateStatus, spaceTypeLabel, statusColor, statusLabel,
+  addReport, fetchSpace, photoUrl, updateStatus, spaceTypeLabel, statusColor, statusLabel,
   type SpaceDetail, type SpaceStatus,
 } from '../api'
 import { useAuth } from '../auth'
 import { field } from './ui'
+import { PhotoPicker } from './PhotoPicker'
 
 const steps = Object.keys(statusLabel) as SpaceStatus[]
 const date = (iso: string) => new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -20,6 +21,8 @@ export function SpaceDetailPanel({ id, onChange, onClose }: Props) {
   const [space, setSpace] = useState<SpaceDetail | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [photos, setPhotos] = useState<string[]>([])
+  const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     setSpace(null)
@@ -47,7 +50,10 @@ export function SpaceDetailPanel({ id, onChange, onClose }: Props) {
     e.preventDefault()
     const form = e.currentTarget
     const description = String(new FormData(form).get('description'))
-    if (await run(() => addReport(token!, id, description))) form.reset()
+    if (await run(() => addReport(token!, id, description, photos))) {
+      form.reset()
+      setPhotos([])
+    }
   }
 
   const canManage = user?.role === 'gestor' || user?.role === 'admin'
@@ -105,6 +111,15 @@ export function SpaceDetailPanel({ id, onChange, onClose }: Props) {
               {space.reports.map((r) => (
                 <li key={r.id} className="border-l-2 border-ink/20 pl-3">
                   <p className="whitespace-pre-line text-sm">{r.description}</p>
+                  {r.photos.length > 0 && (
+                    <div className="mt-2 grid grid-cols-3 gap-1.5">
+                      {r.photos.map((p) => (
+                        <a key={p} href={photoUrl(p)} target="_blank" rel="noreferrer">
+                          <img src={photoUrl(p)} alt={`Foto de ${r.author.name}`} loading="lazy" className="aspect-square w-full rounded object-cover" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
                   <p className="mt-1 text-xs opacity-60">{r.author.name} · {date(r.createdAt)}</p>
                 </li>
               ))}
@@ -119,7 +134,8 @@ export function SpaceDetailPanel({ id, onChange, onClose }: Props) {
                 placeholder="Conte o que você viu para reforçar o reporte"
                 className={field}
               />
-              <button disabled={busy} className="self-start rounded bg-moss px-3 py-1.5 text-sm text-parchment disabled:opacity-50">
+              <PhotoPicker value={photos} onChange={setPhotos} onBusy={setUploading} />
+              <button disabled={busy || uploading} className="self-start rounded bg-moss px-3 py-1.5 text-sm text-parchment disabled:opacity-50">
                 Reforçar reporte
               </button>
             </form>

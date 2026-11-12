@@ -2,7 +2,7 @@ import {
   pgTable, pgEnum, uuid, text, timestamp, boolean, integer, geometry, date, primaryKey,
 } from 'drizzle-orm/pg-core'
 
-export const userRole = pgEnum('user_role', ['morador', 'adotante', 'prestador', 'admin'])
+export const userRole = pgEnum('user_role', ['morador', 'adotante', 'prestador', 'gestor', 'admin'])
 export const spaceType = pgEnum('space_type', ['praca', 'muro', 'canteiro', 'fachada', 'jardim'])
 export const spaceStatus = pgEnum('space_status', ['reportado', 'com_proposta', 'em_obra', 'adotado'])
 export const proposalStatus = pgEnum('proposal_status', ['rascunho', 'publicada', 'adotada', 'cancelada'])

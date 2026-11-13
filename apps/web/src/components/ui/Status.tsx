@@ -11,10 +11,10 @@ export const statusBg: Record<SpaceStatus, string> = {
 }
 // Mesmas cores em hex, para o mapa (Leaflet não lê classes)
 export const statusHex: Record<SpaceStatus, string> = {
-  reportado: '#f2784b',
-  com_proposta: '#e2cd5a',
-  em_obra: '#79a6d6',
-  adotado: '#9bb85c',
+  reportado: '#c58f72',
+  com_proposta: '#cdb97e',
+  em_obra: '#a7b3b9',
+  adotado: '#a5ad7c',
 }
 const short: Record<SpaceStatus, string> = { reportado: 'reportado', com_proposta: 'proposta', em_obra: 'obra', adotado: 'adotado' }
 const steps = Object.keys(statusLabel) as SpaceStatus[]
@@ -76,7 +76,7 @@ export function Band({ n, title, status, open, onToggle, children, dark }: BandP
         )}
       >
         <sup className="w-5 shrink-0 font-mono text-[10px]">{String(n).padStart(2, '0')}</sup>
-        <span className="min-w-0 flex-1 truncate font-display text-[17px] leading-tight">{title}</span>
+        <span className="min-w-0 flex-1 truncate font-display text-[21px] leading-tight font-medium">{title}</span>
         <span aria-hidden className={cn('flex size-5 shrink-0 items-center justify-center rounded-full border text-[10px] transition-transform', dark ? 'border-paper' : 'border-ink-1', open && 'rotate-180')}>↓</span>
       </button>
       {open && children && <div className="animate-rise bg-paper px-3 py-3 pl-10">{children}</div>}

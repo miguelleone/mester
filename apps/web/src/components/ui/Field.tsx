@@ -92,7 +92,7 @@ export function Checkbox({ label, description, className, ...rest }: CheckboxPro
   return (
     <label className={cn('flex cursor-pointer items-start gap-2 py-1', className)}>
       <input type="checkbox" {...rest} className="peer sr-only" />
-      <span aria-hidden className="shrink-0 font-semibold peer-focus-visible:outline-2 peer-focus-visible:outline-pink peer-checked:[&>i]:visible">
+      <span aria-hidden className="shrink-0 font-semibold peer-focus-visible:outline-2 peer-focus-visible:outline-focus peer-checked:[&>i]:visible">
         [<i className="invisible not-italic">x</i>]
       </span>
       <span className="flex flex-col">

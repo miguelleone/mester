@@ -7,9 +7,9 @@ type Size = 'sm' | 'md'
 
 const variants: Record<Variant, string> = {
   primary: 'bg-ink-1 text-paper border border-ink-1 enabled:hover:bg-olive-800 enabled:hover:border-olive-800',
-  secondary: 'bg-paper text-ink-1 border border-ink-1 enabled:hover:bg-lime',
+  secondary: 'bg-paper text-ink-1 border border-ink-1 enabled:hover:bg-hl',
   // Link entre colchetes: [ ver proposta ]
-  link: 'text-ink-1 enabled:hover:bg-lime px-0.5',
+  link: 'text-ink-1 enabled:hover:bg-hl px-0.5',
   danger: 'bg-paper text-alert border border-alert enabled:hover:bg-alert enabled:hover:text-paper',
 }
 
@@ -58,7 +58,7 @@ export function IconButton({ label, glyph, className, ...rest }: IconButtonProps
       {...rest}
       aria-label={label}
       title={label}
-      className={cn('inline-flex size-8 shrink-0 items-center justify-center font-mono text-[14px] transition-colors hover:bg-lime hover:text-ink-1', className)}
+      className={cn('inline-flex size-8 shrink-0 items-center justify-center font-mono text-[14px] transition-colors hover:bg-hl hover:text-ink-1', className)}
     >
       <span aria-hidden>{glyph}</span>
     </button>

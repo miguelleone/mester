@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import './showcase-fonts.css'
 import { spaceTypeLabel, statusLabel, type SpaceStatus, type SpaceType } from '../api'
 import {
   AsciiMap, Band, Button, Checkbox, Field, Input, KeyValue, Logo, Modal, Pixel, Select, StatusPath, StatusTag, Textarea,
@@ -25,7 +26,7 @@ function Section({ id, n, title, note, children }: { id: string; n: string; titl
       <div className="flex items-baseline gap-3 sm:gap-4">
         <span className="w-10 shrink-0 font-book text-[26px] leading-none">{n}</span>
         <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4 border-b border-ink-1 pb-1">
-          <h2 className="text-[26px] leading-none">{title}</h2>
+          <h2 className="text-[30px] leading-none">{title}</h2>
           {note && <span className="text-[11px] tracking-[0.08em] text-ink-3 uppercase">{note}</span>}
         </div>
       </div>
@@ -109,7 +110,7 @@ function JourneyGraph() {
     { id: 's', x: 10, y: 140, w: 124, label: 'prestador', sub: 'diário c/ fotos' },
     { id: 'd', x: 248, y: 250, w: 124, label: '■ adotado', st: 'adotado' as const },
   ]
-  const fill: Record<SpaceStatus, string> = { reportado: '#f2784b', com_proposta: '#e2cd5a', em_obra: '#79a6d6', adotado: '#9bb85c' }
+  const fill: Record<SpaceStatus, string> = { reportado: '#c58f72', com_proposta: '#cdb97e', em_obra: '#a7b3b9', adotado: '#a5ad7c' }
   const at = (id: string) => nodes.find((n) => n.id === id)!
   const links: [string, string, string][] = [['m', 'r', 'marca no mapa'], ['r', 'p', 'gestor analisa'], ['p', 'a', 'orçamento'], ['a', 'o', 'contrata'], ['s', 'o', 'executa'], ['o', 'd', 'antes e depois']]
   const anchor = (a: (typeof nodes)[number], b: (typeof nodes)[number]) => {
@@ -176,9 +177,9 @@ function Demo() {
     <div className="ds min-h-dvh">
       {/* Barra de topo, como a aba de modo de um editor */}
       <div className="sticky top-0 z-50 flex h-8 items-stretch border-b border-ink-1 bg-paper text-[11px] font-semibold tracking-[0.08em] uppercase">
-        <span className="flex items-center bg-orange px-2.5 text-ink-1">Mester</span>
+        <span className="flex items-center bg-ink-1 px-2.5 text-paper">Mester</span>
         <span className="flex items-center border-r border-ink-1 px-2.5">Sistema visual</span>
-        <span className="flex items-center px-2.5 text-ink-2">v0.3 · wip</span>
+        <span className="flex items-center px-2.5 text-ink-2">v0.4 · wip</span>
         <span className="ml-auto hidden items-center px-3 text-ink-3 sm:flex">Recife · nov 2026</span>
       </div>
 
@@ -199,7 +200,7 @@ function Demo() {
           </div>
         </aside>
 
-        <main className="grid-paper min-w-0">
+        <main className="min-w-0">
           <div className="mx-auto flex max-w-[980px] flex-col gap-16 px-4 py-10 sm:px-8">
 
             <Section id="abertura" n="I" title="Abertura" note="o que é o mester">
@@ -210,7 +211,7 @@ function Demo() {
                   </p>
                   <p className="max-w-[62ch] text-ink-2">
                     O morador marca no mapa a praça abandonada, alguém do bairro adota e um prestador local executa a obra.
-                    A interface é compacta como um caderno de pesquisa: títulos em uncial, dados em mono, leitura em Garamond, status em faixas de cor chapada e o mapa inteiro desenhado em caracteres.
+                    A interface é compacta como um caderno de pesquisa: títulos em gótica serifada, dados em mono, leitura em Garamond, status em faixas de cor chapada e o mapa inteiro desenhado em caracteres.
                   </p>
                   <KeyValue
                     className="max-w-md"
@@ -248,12 +249,12 @@ function Demo() {
               </div>
             </Section>
 
-            <Section id="cores" n="III" title="Cores" note="papel branco, terra, verdes e vivas">
+            <Section id="cores" n="III" title="Cores" note="neutras: terra, musgo e pedra">
               <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
-                <Chips n="01" name="papel e tinta" colors={[['#ffffff', 'papel'], ['#f3f2ed', 'grade'], ['#5a554c', 'tinta 2'], ['#1d1a16', 'tinta']]} />
-                <Chips n="02" name="terra" colors={[['#ece4d6', 'terra 100'], ['#c9b9a2', 'terra 300'], ['#4a3a2c', 'terra 700'], ['#2a1f17', 'terra 900']]} />
-                <Chips n="03" name="verdes" colors={[['#cfe03f', 'lima'], ['#93a84a', 'oliva 400'], ['#5f7029', 'oliva 600'], ['#3e4a1c', 'oliva 800']]} />
-                <Chips n="04" name="vivas" colors={[['#ff2d87', 'rosa · foco'], ['#ff6a13', 'laranja'], ['#b8400f', 'alerta'], ['#4f7fb3', 'água']]} />
+                <Chips n="01" name="papel e tinta" colors={[['#ffffff', 'papel'], ['#f6f4ef', 'papel 2'], ['#5a554c', 'tinta 2'], ['#1d1a16', 'tinta']]} />
+                <Chips n="02" name="crema a café" colors={[['#efe9dc', 'terra 100'], ['#d6c9b0', 'terra 300'], ['#8a7358', 'terra 500'], ['#4a3a2c', 'terra 700']]} />
+                <Chips n="03" name="musgo" colors={[['#e6e7d6', 'oliva 100'], ['#a5ad7c', 'oliva 400'], ['#6b7440', 'oliva 600'], ['#3e4a1c', 'oliva 800']]} />
+                <Chips n="04" name="pedras" colors={[['#a7b3b9', 'pedra'], ['#5f6f7c', 'ardósia · água'], ['#c58f72', 'ferrugem'], ['#cdb97e', 'ocre']]} />
               </div>
               <div className="flex flex-col gap-2">
                 <p className="text-[12px]"><span className="text-ink-3">05.</span> faixas de status</p>
@@ -266,7 +267,7 @@ function Demo() {
             <Section id="tipos" n="IV" title="Tipos" note="três famílias">
               <div className="flex flex-col divide-y divide-line border-y border-line">
                 {[
-                  ['Títulos', 'Uncial Antiqua', <p className="font-display text-[36px] leading-none">Praça Maciel Pinheiro</p>],
+                  ['Títulos', 'Grenze Gotisch 500', <p className="font-display text-[40px] leading-none font-medium">Praça Maciel Pinheiro</p>],
                   ['Leitura', 'EB Garamond 17px', <p className="max-w-[52ch] font-book text-[17px] leading-snug">Mato alto perto do coreto e dois bancos quebrados. As crianças da escola ao lado usam a praça todo fim de tarde.</p>],
                   ['Interface + dados', 'JetBrains Mono 13px', <p>Enviar reporte · 12 reportes · -8.0631, -34.8711</p>],
                   ['Rótulos', 'Mono 11px caixa alta', <p className="text-[11px] tracking-[0.08em] uppercase">Nome do espaço · status · fotos</p>],
@@ -274,6 +275,19 @@ function Demo() {
                   <div key={k as string} className="grid gap-2 py-4 sm:grid-cols-[180px_1fr] sm:items-center">
                     <div><p>{k}</p><p className="text-[11px] text-ink-3">{sub}</p></div>
                     <div className="min-w-0">{sample}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label>outras opções para títulos</Label>
+                {[
+                  ['Grenze 500', '"Grenze"', 'mais romana, ainda vertical'],
+                  ['Texturina 500', '"Texturina Variable"', 'gótica mais aberta e leve'],
+                  ['Uncial Antiqua', '"Uncial Antiqua"', 'a da v0.3'],
+                ].map(([n, f, d]) => (
+                  <div key={n} className="grid gap-1 py-2 sm:grid-cols-[180px_1fr] sm:items-baseline">
+                    <div><p>{n}</p><p className="text-[11px] text-ink-3">{d}</p></div>
+                    <p className="text-[30px] leading-none font-medium" style={{ fontFamily: f }}>Praça Maciel Pinheiro</p>
                   </div>
                 ))}
               </div>
@@ -296,7 +310,7 @@ function Demo() {
                   </Button>
                   <Button disabled>Desabilitado</Button>
                 </div>
-                <Hint>Hover pinta de lima; Tab mostra o foco rosa.</Hint>
+                <Hint>Hover pinta de crema; Tab mostra o contorno de foco em musgo.</Hint>
               </div>
 
               <div id="campos" className="grid scroll-mt-12 items-start gap-5 lg:grid-cols-[1fr_320px]">
@@ -319,7 +333,7 @@ function Demo() {
                     <div role="radiogroup" aria-label="Acesso" className="flex text-[12px]">
                       {(['login', 'cadastro'] as const).map((m) => (
                         <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => setMode(m)}
-                          className={cn('h-8 flex-1 border border-ink-1 first:border-r-0', mode === m ? 'bg-ink-1 text-paper' : 'hover:bg-lime')}>
+                          className={cn('h-8 flex-1 border border-ink-1 first:border-r-0', mode === m ? 'bg-ink-1 text-paper' : 'hover:bg-hl')}>
                           {m === 'login' ? 'entrar' : 'criar conta'}
                         </button>
                       ))}
@@ -366,7 +380,7 @@ function Demo() {
                         <div key={n} className="flex flex-col gap-1">
                           <p className="font-book text-[16px] leading-snug">{d}</p>
                           <div className="flex gap-1">
-                            {['#c9b9a2', '#93a84a', '#79a6d6'].map((c) => <div key={c} className="size-14" style={{ background: c }} />)}
+                            {['#d6c9b0', '#a5ad7c', '#a7b3b9'].map((c) => <div key={c} className="size-14" style={{ background: c }} />)}
                           </div>
                           <p className="text-[11px] text-ink-3">{n} · 2 nov 2026</p>
                         </div>
@@ -405,7 +419,7 @@ function Demo() {
 
             <footer className="flex items-center gap-3 border-t border-ink-1 pt-3 text-[11px] text-ink-3">
               <Pixel art={sprout} className="w-5" />
-              <span>mester · sistema visual v0.3 · proposta para aprovação</span>
+              <span>mester · sistema visual v0.4 · proposta para aprovação</span>
             </footer>
           </div>
         </main>

@@ -62,7 +62,7 @@ export function Tree({ nodes, className }: { nodes: TreeNode[]; className?: stri
       const row = (
         <li key={`${prefix}${i}`} className="flex whitespace-pre">
           <span aria-hidden className="opacity-50">{branch}</span>
-          {n.href ? <a href={n.href} className="truncate hover:bg-lime hover:text-ink-1">{n.label}</a> : <span className="truncate">{n.label}</span>}
+          {n.href ? <a href={n.href} className="truncate hover:bg-hl hover:text-ink-1">{n.label}</a> : <span className="truncate">{n.label}</span>}
         </li>
       )
       return [row, ...(n.children ? render(n.children, `${prefix}${last ? '    ' : '│   '}`) : [])]

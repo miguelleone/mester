@@ -5,15 +5,15 @@ import { cn } from './cn'
 const palette: Record<string, string> = {
   k: '#1d1a16', // tinta
   b: '#4a3a2c', // terra escura
-  e: '#c9b9a2', // terra clara
+  e: '#d6c9b0', // terra clara
   d: '#3e4a1c', // verde escuro
-  g: '#5f7029', // verde
-  o: '#93a84a', // verde claro
-  l: '#cfe03f', // lima
-  r: '#f2784b', // laranja (reportado)
-  y: '#e2cd5a', // amarelo
-  p: '#ff2d87', // rosa
-  w: '#79a6d6', // água / vidro
+  g: '#6b7440', // verde
+  o: '#a5ad7c', // verde claro
+  l: '#c9cc9c', // musgo claro
+  r: '#c58f72', // ferrugem
+  y: '#cdb97e', // ocre
+  p: '#9c5546', // vinho (pichação)
+  w: '#a7b3b9', // pedra / vidro
 }
 
 // Desenha uma matriz de caracteres como SVG nítido (sem serrilhado)

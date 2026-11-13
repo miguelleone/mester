@@ -1,9 +1,10 @@
-import { StrictMode, useEffect, useState } from 'react'
+import { StrictMode, Suspense, lazy, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
 import { AuthProvider } from './auth'
-import { Showcase } from './design/Showcase'
+// O showcase do design system é carregado à parte, só quando aberto
+const Showcase = lazy(() => import('./design/Showcase').then((m) => ({ default: m.Showcase })))
 
 // #/design abre o showcase do design system
 function Root() {
@@ -13,7 +14,7 @@ function Root() {
     addEventListener('hashchange', on)
     return () => removeEventListener('hashchange', on)
   }, [])
-  return design ? <Showcase /> : <App />
+  return design ? <Suspense><Showcase /></Suspense> : <App />
 }
 
 createRoot(document.getElementById('root')!).render(

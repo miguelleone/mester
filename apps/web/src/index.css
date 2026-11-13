@@ -3,11 +3,12 @@
 @import "@fontsource-variable/eb-garamond/wght.css";
 @import "@fontsource-variable/eb-garamond/wght-italic.css";
 @import "@fontsource-variable/jetbrains-mono/wght.css";
+@import "@fontsource/uncial-antiqua";
 
 /*
  * Design system do Mester, v0.3 "atlas".
  * Compacto e denso como um caderno de pesquisa: papel quadriculado branco,
- * interface em mono (dados, ASCII, colchetes), leitura em Garamond,
+ * títulos em uncial (caligrafia semi-uncial irlandesa), interface em mono (dados, ASCII, colchetes), leitura em Garamond,
  * faixas de cor chapada para o status e ilustrações em pixel.
  * Tokens viram utilitários do Tailwind (bg-paper, text-ink-2, bg-st-obra, font-mono...).
  */
@@ -18,20 +19,21 @@
   --color-moss: #4f5d2f;
   --font-serif: "Georgia", serif;
 
-  /* Tipografia: Garamond para ler, mono para operar */
+  /* Tipografia: uncial para títulos, Garamond para ler, mono para operar */
+  --font-display: "Uncial Antiqua", "EB Garamond Variable", Georgia, serif;
   --font-book: "EB Garamond Variable", "EB Garamond", Garamond, Georgia, serif;
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
   /* 01. papel e tinta */
-  --color-paper: #fcfcfa;
-  --color-paper-2: #f3f2ec;
-  --color-grid: #ebe9e1;
+  --color-paper: #ffffff;
+  --color-paper-2: #f6f5f1;
+  --color-grid: #f3f2ed;
   --color-line: #d8d5ca;
   --color-ink-1: #1d1a16;
   --color-ink-2: #5a554c;
   --color-ink-3: #8f897d;
 
-  /* 02. terra (painéis escuros, como a barra de um editor) */
+  /* 02. terra (só nas ilustrações e detalhes) */
   --color-earth-900: #2a1f17;
   --color-earth-700: #4a3a2c;
   --color-earth-300: #c9b9a2;
@@ -94,9 +96,9 @@
     -webkit-font-smoothing: antialiased;
   }
   .ds :is(h1, h2, h3) {
-    font-family: var(--font-book);
-    font-weight: 500;
-    letter-spacing: -0.01em;
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0;
     text-wrap: balance;
   }
   /* Foco: contorno rosa vivo, impossível de não ver */
@@ -118,12 +120,12 @@
 }
 
 @layer components {
-  /* Papel quadriculado de 16px */
+  /* Papel quadriculado de 20px, bem suave */
   .grid-paper {
     background-image:
       linear-gradient(var(--color-grid) 1px, transparent 1px),
       linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
-    background-size: 16px 16px;
+    background-size: 20px 20px;
     background-position: -1px -1px;
   }
   /* Pontilhado, para áreas de canvas */

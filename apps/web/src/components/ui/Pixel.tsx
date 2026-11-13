@@ -124,12 +124,12 @@ export const spaceArt: Record<SpaceType, string[]> = {
   ],
 }
 
-// Marca: broto em pixel + "Mester" em Garamond itálico
+// Marca: broto em pixel + "Mester" em uncial
 export function Logo({ className }: { className?: string }) {
   return (
     <span className={cn('inline-flex items-end gap-1.5', className)}>
       <Pixel art={sprout} className="h-[1.1em] w-auto" />
-      <span className="font-book text-[1em] leading-none font-medium italic tracking-tight">Mester</span>
+      <span className="font-display text-[1em] leading-none">Mester</span>
     </span>
   )
 }

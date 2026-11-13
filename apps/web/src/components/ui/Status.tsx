@@ -72,11 +72,11 @@ export function Band({ n, title, status, open, onToggle, children, dark }: BandP
         onClick={onToggle}
         className={cn(
           'flex w-full items-center gap-2 px-3 py-2 text-left transition-[filter] hover:brightness-95',
-          dark ? 'bg-earth-900 text-paper' : status ? cn(statusBg[status], 'text-ink-1') : 'bg-paper-2',
+          dark ? 'bg-ink-1 text-paper' : status ? cn(statusBg[status], 'text-ink-1') : 'bg-paper-2',
         )}
       >
         <sup className="w-5 shrink-0 font-mono text-[10px]">{String(n).padStart(2, '0')}</sup>
-        <span className="min-w-0 flex-1 truncate font-book text-[20px] leading-tight">{title}</span>
+        <span className="min-w-0 flex-1 truncate font-display text-[17px] leading-tight">{title}</span>
         <span aria-hidden className={cn('flex size-5 shrink-0 items-center justify-center rounded-full border text-[10px] transition-transform', dark ? 'border-paper' : 'border-ink-1', open && 'rotate-180')}>↓</span>
       </button>
       {open && children && <div className="animate-rise bg-paper px-3 py-3 pl-10">{children}</div>}

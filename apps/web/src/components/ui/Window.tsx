@@ -5,7 +5,7 @@ import { IconButton } from './Button'
 type WindowProps = {
   /** nome curto na barra, ex.: "espaço.txt" */
   title: ReactNode
-  /** barra escura (terra) ou clara */
+  /** barra branca (padrão) ou levemente cinza */
   tone?: 'dark' | 'light'
   onClose?: () => void
   actions?: ReactNode
@@ -22,10 +22,11 @@ export function Window({ title, tone = 'dark', onClose, actions, children, foote
       <header
         className={cn(
           'flex h-8 shrink-0 items-center gap-2 pl-2.5 text-[11px] font-semibold tracking-[0.08em] uppercase',
-          tone === 'dark' ? 'bg-earth-900 text-earth-100' : 'border-b border-ink-1 bg-paper-2 text-ink-1',
+          'border-b border-ink-1 text-ink-1',
+          tone === 'dark' ? 'bg-paper' : 'bg-paper-2',
         )}
       >
-        <span aria-hidden className={tone === 'dark' ? 'text-lime' : 'text-olive-600'}>■</span>
+        <span aria-hidden className="text-olive-600">■</span>
         <h2 className="min-w-0 flex-1 truncate font-mono! text-[11px] font-semibold! tracking-[0.08em]">{title}</h2>
         {actions}
         {onClose && <IconButton label="Fechar" glyph="×" onClick={onClose} className="size-8 text-[16px]" />}

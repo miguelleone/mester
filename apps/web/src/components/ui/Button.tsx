@@ -6,7 +6,7 @@ type Variant = 'primary' | 'secondary' | 'link' | 'danger'
 type Size = 'sm' | 'md'
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-earth-900 text-paper border border-earth-900 enabled:hover:bg-olive-800 enabled:hover:border-olive-800',
+  primary: 'bg-ink-1 text-paper border border-ink-1 enabled:hover:bg-olive-800 enabled:hover:border-olive-800',
   secondary: 'bg-paper text-ink-1 border border-ink-1 enabled:hover:bg-lime',
   // Link entre colchetes: [ ver proposta ]
   link: 'text-ink-1 enabled:hover:bg-lime px-0.5',

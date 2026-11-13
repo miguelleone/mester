@@ -19,10 +19,10 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
       ref={ref}
       onClose={onClose}
       onClick={(e) => { if (e.target === ref.current) onClose() }}
-      className="m-auto w-[calc(100%-2rem)] max-w-md border border-ink-1 bg-paper p-0 font-mono text-[13px] text-ink-1 shadow-window backdrop:bg-earth-900/40 open:animate-rise"
+      className="m-auto w-[calc(100%-2rem)] max-w-md border border-ink-1 bg-paper p-0 font-mono text-[13px] text-ink-1 shadow-window backdrop:bg-ink-1/30 open:animate-rise"
     >
-      <div className="flex h-8 items-center gap-2 bg-earth-900 pl-2.5 text-[11px] font-semibold tracking-[0.08em] text-earth-100 uppercase">
-        <span aria-hidden className="text-lime">■</span>
+      <div className="flex h-8 items-center gap-2 border-b border-ink-1 pl-2.5 text-[11px] font-semibold tracking-[0.08em] uppercase">
+        <span aria-hidden className="text-olive-600">■</span>
         <h2 className="flex-1 truncate font-mono! text-[11px] font-semibold!">{title}</h2>
         <IconButton label="Fechar" glyph="×" onClick={onClose} className="text-[16px]" />
       </div>

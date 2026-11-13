@@ -25,7 +25,7 @@ function Section({ id, n, title, note, children }: { id: string; n: string; titl
       <div className="flex items-baseline gap-3 sm:gap-4">
         <span className="w-10 shrink-0 font-book text-[26px] leading-none">{n}</span>
         <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4 border-b border-ink-1 pb-1">
-          <h2 className="text-[26px] leading-none italic">{title}</h2>
+          <h2 className="text-[26px] leading-none">{title}</h2>
           {note && <span className="text-[11px] tracking-[0.08em] text-ink-3 uppercase">{note}</span>}
         </div>
       </div>
@@ -49,7 +49,7 @@ function Chips({ n, name, colors }: { n: string; name: string; colors: [string, 
     <div className="flex flex-col gap-2">
       <div className="flex self-start border border-line">
         {colors.map(([hex, label]) => (
-          <div key={hex} title={`${label} ${hex}`} className="size-10 border-r border-paper last:border-r-0 sm:size-14" style={{ background: hex }} />
+          <div key={hex} title={`${label} ${hex}`} className="size-10 border-r border-paper last:border-r-0 lg:size-12" style={{ background: hex }} />
         ))}
       </div>
       <p className="text-[12px]"><span className="text-ink-3">{n}.</span> {name}</p>
@@ -139,9 +139,9 @@ function JourneyGraph() {
         })}
         {nodes.map((n) => (
           <g key={n.id}>
-            <rect x={n.x} y={n.y} width={n.w} height={40} fill={n.st ? fill[n.st] : '#fcfcfa'} stroke="#1d1a16" />
-            <rect x={n.x} y={n.y} width={n.w} height={14} fill={n.st ? 'none' : '#2a1f17'} />
-            <text x={n.x + 6} y={n.y + 11} fill={n.st ? '#1d1a16' : '#ece4d6'} fontWeight="600">{n.label}</text>
+            <rect x={n.x} y={n.y} width={n.w} height={40} fill={n.st ? fill[n.st] : '#ffffff'} stroke="#1d1a16" />
+            <rect x={n.x} y={n.y} width={n.w} height={14} fill={n.st ? 'none' : '#1d1a16'} />
+            <text x={n.x + 6} y={n.y + 11} fill={n.st ? '#1d1a16' : '#ffffff'} fontWeight="600">{n.label}</text>
             {n.sub && <text x={n.x + 6} y={n.y + 31} fill="#5a554c">{n.sub}</text>}
           </g>
         ))}
@@ -177,22 +177,22 @@ function Demo() {
       {/* Barra de topo, como a aba de modo de um editor */}
       <div className="sticky top-0 z-50 flex h-8 items-stretch border-b border-ink-1 bg-paper text-[11px] font-semibold tracking-[0.08em] uppercase">
         <span className="flex items-center bg-orange px-2.5 text-ink-1">Mester</span>
-        <span className="flex items-center bg-earth-900 px-2.5 text-earth-100">Sistema visual</span>
+        <span className="flex items-center border-r border-ink-1 px-2.5">Sistema visual</span>
         <span className="flex items-center px-2.5 text-ink-2">v0.3 · wip</span>
         <span className="ml-auto hidden items-center px-3 text-ink-3 sm:flex">Recife · nov 2026</span>
       </div>
 
-      <div className="md:grid md:grid-cols-[232px_1fr] md:bg-[linear-gradient(to_right,var(--color-earth-900)_232px,transparent_232px)]">
+      <div className="md:grid md:grid-cols-[232px_1fr]">
         {/* Índice em árvore ASCII */}
-        <aside className="bg-earth-900 px-3 py-3 text-earth-100 md:sticky md:top-8 md:h-[calc(100dvh-2rem)] md:overflow-y-auto">
+        <aside className="border-b border-line bg-paper px-3 py-3 text-ink-1 md:sticky md:border-r md:border-b-0 md:top-8 md:h-[calc(100dvh-2rem)] md:overflow-y-auto">
           <details className="md:hidden">
             <summary className="cursor-pointer text-[12px]">▸ índice</summary>
             <Tree nodes={index} className="mt-2" />
           </details>
           <div className="hidden flex-col gap-6 md:flex">
             <Tree nodes={index} />
-            <div className="flex flex-col gap-1 text-[11px] text-earth-300">
-              <p className="text-earth-100">legenda</p>
+            <div className="flex flex-col gap-1 text-[11px] text-ink-2">
+              <p className="text-ink-1">legenda</p>
               {statuses.map((s) => <StatusTag key={s} status={s} className="self-start" />)}
             </div>
             <Pixel art={sprout} className="mt-auto w-10" />
@@ -205,12 +205,12 @@ function Demo() {
             <Section id="abertura" n="I" title="Abertura" note="o que é o mester">
               <div className="grid items-start gap-8 lg:grid-cols-[1fr_300px]">
                 <div className="flex flex-col gap-4">
-                  <p className="max-w-[30ch] font-book text-[34px] leading-[1.1] sm:text-[42px]">
+                  <p className="max-w-[26ch] font-display text-[28px] leading-[1.18] sm:text-[36px]">
                     “Espaços da cidade à espera de cuidado, e as pessoas que podem cuidar deles.”
                   </p>
                   <p className="max-w-[62ch] text-ink-2">
                     O morador marca no mapa a praça abandonada, alguém do bairro adota e um prestador local executa a obra.
-                    A interface é compacta como um caderno de pesquisa: dados em mono, leitura em Garamond, status em faixas de cor chapada e o mapa inteiro desenhado em caracteres.
+                    A interface é compacta como um caderno de pesquisa: títulos em uncial, dados em mono, leitura em Garamond, status em faixas de cor chapada e o mapa inteiro desenhado em caracteres.
                   </p>
                   <KeyValue
                     className="max-w-md"
@@ -250,7 +250,7 @@ function Demo() {
 
             <Section id="cores" n="III" title="Cores" note="papel branco, terra, verdes e vivas">
               <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
-                <Chips n="01" name="papel e tinta" colors={[['#fcfcfa', 'papel'], ['#ebe9e1', 'grade'], ['#5a554c', 'tinta 2'], ['#1d1a16', 'tinta']]} />
+                <Chips n="01" name="papel e tinta" colors={[['#ffffff', 'papel'], ['#f3f2ed', 'grade'], ['#5a554c', 'tinta 2'], ['#1d1a16', 'tinta']]} />
                 <Chips n="02" name="terra" colors={[['#ece4d6', 'terra 100'], ['#c9b9a2', 'terra 300'], ['#4a3a2c', 'terra 700'], ['#2a1f17', 'terra 900']]} />
                 <Chips n="03" name="verdes" colors={[['#cfe03f', 'lima'], ['#93a84a', 'oliva 400'], ['#5f7029', 'oliva 600'], ['#3e4a1c', 'oliva 800']]} />
                 <Chips n="04" name="vivas" colors={[['#ff2d87', 'rosa · foco'], ['#ff6a13', 'laranja'], ['#b8400f', 'alerta'], ['#4f7fb3', 'água']]} />
@@ -263,10 +263,10 @@ function Demo() {
               </div>
             </Section>
 
-            <Section id="tipos" n="IV" title="Tipos" note="duas famílias">
+            <Section id="tipos" n="IV" title="Tipos" note="três famílias">
               <div className="flex flex-col divide-y divide-line border-y border-line">
                 {[
-                  ['Títulos', 'EB Garamond itálico', <p className="font-book text-[36px] leading-none italic">Praça Maciel Pinheiro</p>],
+                  ['Títulos', 'Uncial Antiqua', <p className="font-display text-[36px] leading-none">Praça Maciel Pinheiro</p>],
                   ['Leitura', 'EB Garamond 17px', <p className="max-w-[52ch] font-book text-[17px] leading-snug">Mato alto perto do coreto e dois bancos quebrados. As crianças da escola ao lado usam a praça todo fim de tarde.</p>],
                   ['Interface + dados', 'JetBrains Mono 13px', <p>Enviar reporte · 12 reportes · -8.0631, -34.8711</p>],
                   ['Rótulos', 'Mono 11px caixa alta', <p className="text-[11px] tracking-[0.08em] uppercase">Nome do espaço · status · fotos</p>],
@@ -355,7 +355,7 @@ function Demo() {
                     <div className="flex items-start gap-3">
                       <Pixel art={spaceArt.jardim} className="size-12 shrink-0" title="Jardim" />
                       <div className="min-w-0">
-                        <h3 className="text-[24px] leading-tight italic">Jardim do Derby</h3>
+                        <h3 className="text-[24px] leading-tight">Jardim do Derby</h3>
                         <p className="text-[11px] tracking-[0.08em] text-ink-2 uppercase">jardim · público</p>
                       </div>
                     </div>

@@ -6,10 +6,10 @@
 @import "@fontsource-variable/grenze-gotisch/wght.css";
 
 /*
- * Design system do Mester, v0.4 "atlas".
- * Compacto e denso como um caderno de pesquisa: papel branco liso,
- * títulos em Grenze Gotisch (serifa vertical, entre a romana e a gótica), interface em mono
- * (dados, ASCII, colchetes), leitura em Garamond, status em faixas de cor chapada e ilustrações em pixel.
+ * Design system do Mester, v0.5 "atlas".
+ * Compacto e denso como um caderno de pesquisa: papel branco liso, superfícies suaves sem bordas pretas,
+ * títulos em Grenze Gotisch (serifa vertical, entre a romana e a gótica), textos em Garamond,
+ * mono só para rótulos, dados e o mapa ASCII, status em faixas de cor chapada e ilustrações em pixel.
  * Paleta neutra tirada das referências: crema a café, pedras, musgo e tecido verde.
  * Tokens viram utilitários do Tailwind (bg-paper, text-ink-2, bg-st-obra, font-mono...).
  */
@@ -65,9 +65,12 @@
   /* Água no mapa */
   --color-water: #5f6f7c;
 
-  /* Compacto: cantos retos, quase sem sombra */
-  --radius-sm: 2px;
-  --shadow-window: 0 1px 0 rgb(29 26 22 / 0.06), 0 8px 24px -12px rgb(29 26 22 / 0.28);
+  /* Cantos suaves e sombras leves no lugar de bordas pretas */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --shadow-soft: 0 1px 2px rgb(29 26 22 / 0.05), 0 6px 20px -8px rgb(29 26 22 / 0.16);
+  --shadow-float: 0 2px 4px rgb(29 26 22 / 0.06), 0 18px 40px -12px rgb(29 26 22 / 0.28);
 
   --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
   --animate-rise: rise 200ms var(--ease-out-soft);
@@ -90,12 +93,13 @@
     color: var(--color-ink);
   }
   /* Escopo do design system novo (por enquanto só o showcase; vira o body na migração das telas) */
+  /* Texto corrido em Garamond; mono só em rótulos, números, etiquetas e no mapa */
   .ds {
     background-color: var(--color-paper);
     color: var(--color-ink-1);
-    font-family: var(--font-mono);
-    font-size: 13px;
-    line-height: 1.5;
+    font-family: var(--font-book);
+    font-size: 16px;
+    line-height: 1.45;
     font-variant-ligatures: none;
     -webkit-font-smoothing: antialiased;
   }
@@ -105,7 +109,7 @@
     letter-spacing: 0;
     text-wrap: balance;
   }
-  /* Foco: contorno rosa vivo, impossível de não ver */
+  /* Foco: contorno musgo, bem visível */
   :focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
@@ -128,10 +132,6 @@
   .dot-paper {
     background-image: radial-gradient(var(--color-line) 0.8px, transparent 1px);
     background-size: 16px 16px;
-  }
-  /* Borda tracejada de figura, como nas pranchas de iluminura */
-  .fig-frame {
-    border: 1.5px dashed var(--color-ink-1);
   }
   /* Pixel art nítida */
   .pixelated {

@@ -19,15 +19,14 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
       ref={ref}
       onClose={onClose}
       onClick={(e) => { if (e.target === ref.current) onClose() }}
-      className="m-auto w-[calc(100%-2rem)] max-w-md border border-ink-1 bg-paper p-0 font-mono text-[13px] text-ink-1 shadow-window backdrop:bg-ink-1/30 open:animate-rise"
+      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-lg bg-paper p-0 font-book text-[16px] text-ink-1 shadow-float backdrop:bg-ink-1/25 open:animate-rise"
     >
-      <div className="flex h-8 items-center gap-2 border-b border-ink-1 pl-2.5 text-[11px] font-semibold tracking-[0.08em] uppercase">
-        <span aria-hidden className="text-olive-600">■</span>
-        <h2 className="flex-1 truncate font-mono! text-[11px] font-semibold!">{title}</h2>
-        <IconButton label="Fechar" glyph="×" onClick={onClose} className="text-[16px]" />
+      <div className="flex items-start gap-2 pt-4 pr-2 pl-5">
+        <h2 className="flex-1 font-display text-[24px] leading-tight font-medium">{title}</h2>
+        <IconButton label="Fechar" glyph="×" onClick={onClose} />
       </div>
-      <div className="p-4">{children}</div>
-      {footer && <div className="flex justify-end gap-2 border-t border-line bg-paper-2 px-4 py-2">{footer}</div>}
+      <div className="px-5 pt-2 pb-5">{children}</div>
+      {footer && <div className="flex justify-end gap-2 bg-paper-2/70 px-5 py-2.5">{footer}</div>}
     </dialog>
   )
 }

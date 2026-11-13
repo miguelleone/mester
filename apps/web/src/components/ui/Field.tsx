@@ -27,14 +27,14 @@ export function Field({ label, hint, error, optional, inline, children, classNam
   return (
     <FieldContext.Provider value={{ id, describedBy, invalid: !!error }}>
       <div className={cn('grid gap-1', inline && 'sm:grid-cols-[136px_1fr] sm:gap-x-3', className)}>
-        <label htmlFor={id} className={cn('text-[11px] font-semibold tracking-[0.08em] text-ink-2 uppercase', inline && 'sm:pt-2.5')}>
+        <label htmlFor={id} className={cn('font-mono text-[11px] font-semibold tracking-[0.08em] text-ink-2 uppercase', inline && 'sm:pt-2')}>
           {label}
           {optional && <span className="ml-1 font-normal tracking-normal text-ink-3 normal-case">opcional</span>}
         </label>
         <div className="flex min-w-0 flex-col gap-1">
           {children}
-          {hint && !error && <p id={hintId} className="text-[12px] text-ink-3">{hint}</p>}
-          {error && <p id={errorId} className="text-[12px] font-medium text-alert">! {error}</p>}
+          {hint && !error && <p id={hintId} className="text-[14px] text-ink-3 italic">{hint}</p>}
+          {error && <p id={errorId} className="text-[14px] text-alert"><span className="font-mono text-[12px] font-bold">! </span>{error}</p>}
         </div>
       </div>
     </FieldContext.Provider>
@@ -50,16 +50,17 @@ function useField(id?: string) {
   }
 }
 
-// 16px no celular evita o zoom automático do iOS ao focar; 13px no desktop, compacto
+// Campo sem borda: fundo suave que clareia no foco. Garamond 16px (também evita o zoom do iOS).
 const control = cn(
-  'w-full rounded-none border border-line bg-paper px-2.5 text-base text-ink-1 sm:text-[13px]',
-  'placeholder:text-ink-3 transition-colors hover:border-ink-3',
-  'focus-visible:border-ink-1 aria-invalid:border-alert',
-  'disabled:cursor-not-allowed disabled:bg-paper-2 disabled:text-ink-3',
+  'w-full rounded-md border-0 bg-paper-2 px-3 font-book text-base text-ink-1',
+  'placeholder:text-ink-3 placeholder:italic transition-colors hover:bg-hl/60',
+  'focus-visible:bg-paper focus-visible:shadow-[inset_0_0_0_1px_var(--color-line)] focus-visible:outline-offset-0',
+  'aria-invalid:bg-[#f6e9e2] aria-invalid:shadow-[inset_0_-2px_0_var(--color-alert)]',
+  'disabled:cursor-not-allowed disabled:text-ink-3',
 )
 
 export function Input({ className, id, ...rest }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...useField(id)} {...rest} className={cn(control, 'h-9 font-mono', className)} />
+  return <input {...useField(id)} {...rest} className={cn(control, 'h-9', className)} />
 }
 
 // Texto livre das pessoas vai em Garamond: é para ler, não para operar
@@ -69,7 +70,7 @@ export function Textarea({ className, id, ...rest }: TextareaHTMLAttributes<HTML
       {...useField(id)}
       rows={4}
       {...rest}
-      className={cn(control, 'resize-y py-1.5 font-book text-[17px] leading-snug sm:text-[16px]', className)}
+      className={cn(control, 'resize-y py-2 leading-snug', className)}
     />
   )
 }
@@ -77,7 +78,7 @@ export function Textarea({ className, id, ...rest }: TextareaHTMLAttributes<HTML
 export function Select({ className, id, children, ...rest }: SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <div className={cn('relative', className)}>
-      <select {...useField(id)} {...rest} className={cn(control, 'h-9 cursor-pointer appearance-none pr-7 font-mono')}>
+      <select {...useField(id)} {...rest} className={cn(control, 'h-9 cursor-pointer appearance-none pr-8')}>
         {children}
       </select>
       <span aria-hidden className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-[11px]">▾</span>
@@ -92,12 +93,12 @@ export function Checkbox({ label, description, className, ...rest }: CheckboxPro
   return (
     <label className={cn('flex cursor-pointer items-start gap-2 py-1', className)}>
       <input type="checkbox" {...rest} className="peer sr-only" />
-      <span aria-hidden className="shrink-0 font-semibold peer-focus-visible:outline-2 peer-focus-visible:outline-focus peer-checked:[&>i]:visible">
+      <span aria-hidden className="shrink-0 font-mono text-[13px] leading-6 font-semibold peer-focus-visible:outline-2 peer-focus-visible:outline-focus peer-checked:[&>i]:visible">
         [<i className="invisible not-italic">x</i>]
       </span>
       <span className="flex flex-col">
         <span>{label}</span>
-        {description && <span className="text-[12px] text-ink-3">{description}</span>}
+        {description && <span className="text-[14px] text-ink-3 italic">{description}</span>}
       </span>
     </label>
   )

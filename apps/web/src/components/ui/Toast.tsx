@@ -8,7 +8,7 @@ type Toast = { id: number; tone: Tone; message: ReactNode }
 
 const ToastContext = createContext<((message: ReactNode, tone?: Tone) => void) | null>(null)
 
-const prefix = { success: ['ok', 'text-olive-600'], error: ['erro', 'text-alert'], info: ['obs', 'text-ink-3'] } as const
+const prefix = { success: ['ok', 'text-olive-400'], error: ['erro', 'text-rust'], info: ['obs', 'text-stone'] } as const
 
 let seq = 0
 
@@ -34,12 +34,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={t.id}
             role={t.tone === 'error' ? 'alert' : 'status'}
-            className="pointer-events-auto flex w-full max-w-md items-center gap-2 border border-ink-1 bg-paper py-1 pr-1 pl-3 font-mono text-[13px] text-ink-1 shadow-window animate-rise"
+            className="pointer-events-auto flex w-full max-w-md items-center gap-2 rounded-full bg-ink-1 py-1 pr-1.5 pl-4 font-mono text-[12.5px] text-paper shadow-float animate-rise"
           >
-            <span aria-hidden className="text-ink-3">&gt;</span>
+            <span aria-hidden className="text-paper/50">&gt;</span>
             <span className={cn('font-semibold', prefix[t.tone][1])}>{prefix[t.tone][0]}</span>
-            <span className="min-w-0 flex-1">{t.message} <Cursor className="text-olive-600" /></span>
-            <IconButton label="Fechar aviso" glyph="×" onClick={() => dismiss(t.id)} />
+            <span className="min-w-0 flex-1">{t.message} <Cursor className="text-olive-400" /></span>
+            <IconButton label="Fechar aviso" glyph="×" onClick={() => dismiss(t.id)} className="text-paper/70 hover:bg-paper/10 hover:text-paper" />
           </div>
         ))}
       </div>

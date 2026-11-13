@@ -22,12 +22,12 @@ const pins = [
 // Seção numerada em romano, como capítulos de um documento de pesquisa
 function Section({ id, n, title, note, children }: { id: string; n: string; title: string; note?: string; children: ReactNode }) {
   return (
-    <section id={id} className="flex scroll-mt-12 flex-col gap-5">
+    <section id={id} className="flex scroll-mt-16 flex-col gap-5">
       <div className="flex items-baseline gap-3 sm:gap-4">
         <span className="w-10 shrink-0 font-book text-[26px] leading-none">{n}</span>
-        <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4 border-b border-ink-1 pb-1">
+        <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4 border-b border-line pb-1.5">
           <h2 className="text-[30px] leading-none">{title}</h2>
-          {note && <span className="text-[11px] tracking-[0.08em] text-ink-3 uppercase">{note}</span>}
+          {note && <span className="font-mono text-[11px] tracking-[0.08em] text-ink-3 uppercase">{note}</span>}
         </div>
       </div>
       <div className="flex flex-col gap-5 sm:pl-[52px]">{children}</div>
@@ -38,8 +38,8 @@ function Section({ id, n, title, note, children }: { id: string; n: string; titl
 function Fig({ n, caption, children, className }: { n: string; caption: ReactNode; children: ReactNode; className?: string }) {
   return (
     <figure className={cn('flex min-w-0 flex-col gap-2', className)}>
-      <div className="fig-frame min-w-0 bg-paper p-2 sm:p-3">{children}</div>
-      <figcaption className="text-[12px] text-ink-2"><span className="font-semibold tracking-[0.08em] text-ink-1">FIG. {n}</span> {caption}</figcaption>
+      <div className="min-w-0 rounded-lg bg-paper-2 p-3 sm:p-4">{children}</div>
+      <figcaption className="font-mono text-[12px] text-ink-2"><span className="font-semibold tracking-[0.08em] text-ink-1">FIG. {n}</span> {caption}</figcaption>
     </figure>
   )
 }
@@ -48,13 +48,13 @@ function Fig({ n, caption, children, className }: { n: string; caption: ReactNod
 function Chips({ n, name, colors }: { n: string; name: string; colors: [string, string][] }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex self-start border border-line">
+      <div className="flex self-start overflow-hidden rounded-md shadow-[inset_0_0_0_1px_var(--color-line)]">
         {colors.map(([hex, label]) => (
           <div key={hex} title={`${label} ${hex}`} className="size-10 border-r border-paper last:border-r-0 lg:size-12" style={{ background: hex }} />
         ))}
       </div>
-      <p className="text-[12px]"><span className="text-ink-3">{n}.</span> {name}</p>
-      <ul className="text-[11px] leading-[1.5] text-ink-2">
+      <p className="font-mono text-[12px]"><span className="text-ink-3">{n}.</span> {name}</p>
+      <ul className="font-mono text-[11px] leading-[1.5] text-ink-2">
         {colors.map(([hex, label]) => <li key={hex}>{label} <span className="text-ink-3">{hex}</span></li>)}
       </ul>
     </div>
@@ -75,18 +75,18 @@ function PhoneMock() {
       <div className="h-[600px] overflow-hidden rounded-[30px] border-[6px] border-ink-1 bg-paper">
         <div className="flex items-center justify-between px-4 pt-5 pb-2">
           <Logo className="text-[22px]" />
-          <span className="flex items-center gap-1 text-[11px]">
+          <span className="font-mono flex items-center gap-1 text-[11px]">
             <span className="rounded-full bg-st-adotado px-2.5 py-0.5">Menu</span>
             <span className="flex size-5 items-center justify-center rounded-full bg-st-adotado">+</span>
           </span>
         </div>
-        <div className="border-y border-ink-1 bg-paper px-1 py-1">
+        <div className="mx-2 rounded-md bg-paper-2 px-1 py-1">
           <AsciiMap rows={15} size={9} pins={pins.slice(0, 4)} />
         </div>
-        <p className="px-3 pt-2 pb-1 text-[10px] tracking-[0.08em] text-ink-2 uppercase">4 espaços perto de você</p>
+        <p className="font-mono px-3 pt-2 pb-1 text-[10px] tracking-[0.08em] text-ink-2 uppercase">4 espaços perto de você</p>
         {list.map(([name, st], i) => (
           <Band key={name} n={i + 1} title={name} status={st} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)}>
-            <div className="flex flex-col gap-1.5 text-[11px]">
+            <div className="font-mono flex flex-col gap-1.5 text-[11px]">
               <p className="font-book text-[14px] leading-snug">Mato alto perto do coreto e dois bancos quebrados.</p>
               <p><span aria-hidden>→ </span>12 reportes · desde 3 out</p>
               <p><span aria-hidden>→ </span>Seu Antônio, jardineiro</p>
@@ -120,18 +120,18 @@ function JourneyGraph() {
     return [ac[0], a.y + 40, bc[0] + (ac[0] < bc[0] ? -20 : 20), b.y]
   }
   return (
-    <div className="dot-paper overflow-x-auto border border-line">
+    <div className="dot-paper overflow-x-auto rounded-lg bg-paper-2/50 p-2">
       <svg viewBox="0 0 620 300" className="block w-full max-w-[680px] min-w-[560px] font-mono text-[11px]" role="img" aria-label="Jornada: morador reporta, gestor analisa, adotante contrata, prestador executa, espaço adotado">
         <defs>
           <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0 0 L8 4 L0 8 z" fill="#1d1a16" />
+            <path d="M0 0 L8 4 L0 8 z" fill="#77716a" />
           </marker>
         </defs>
         {links.map(([a, b, label]) => {
           const [x1, y1, x2, y2] = anchor(at(a), at(b))
           return (
             <g key={a + b}>
-              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#1d1a16" strokeWidth="1" markerEnd="url(#arr)" />
+              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#77716a" strokeWidth="1" markerEnd="url(#arr)" />
               {y1 === y2
                 ? <text x={(x1 + x2) / 2} y={y1 - 6} textAnchor="middle" fill="#5a554c">{label}</text>
                 : <text x={x1 + 6} y={(y1 + y2) / 2 + 4} fill="#5a554c">{label}</text>}
@@ -140,10 +140,9 @@ function JourneyGraph() {
         })}
         {nodes.map((n) => (
           <g key={n.id}>
-            <rect x={n.x} y={n.y} width={n.w} height={40} fill={n.st ? fill[n.st] : '#ffffff'} stroke="#1d1a16" />
-            <rect x={n.x} y={n.y} width={n.w} height={14} fill={n.st ? 'none' : '#1d1a16'} />
-            <text x={n.x + 6} y={n.y + 11} fill={n.st ? '#1d1a16' : '#ffffff'} fontWeight="600">{n.label}</text>
-            {n.sub && <text x={n.x + 6} y={n.y + 31} fill="#5a554c">{n.sub}</text>}
+            <rect x={n.x} y={n.y} width={n.w} height={40} rx={7} fill={n.st ? fill[n.st] : '#ffffff'} />
+                        <text x={n.x + 9} y={n.y + 16} fill="#1d1a16" fontWeight="600">{n.label}</text>
+            {n.sub && <text x={n.x + 9} y={n.y + 31} fill="#5a554c">{n.sub}</text>}
           </g>
         ))}
       </svg>
@@ -175,24 +174,24 @@ function Demo() {
 
   return (
     <div className="ds min-h-dvh">
-      {/* Barra de topo, como a aba de modo de um editor */}
-      <div className="sticky top-0 z-50 flex h-8 items-stretch border-b border-ink-1 bg-paper text-[11px] font-semibold tracking-[0.08em] uppercase">
-        <span className="flex items-center bg-ink-1 px-2.5 text-paper">Mester</span>
-        <span className="flex items-center border-r border-ink-1 px-2.5">Sistema visual</span>
-        <span className="flex items-center px-2.5 text-ink-2">v0.4 · wip</span>
-        <span className="ml-auto hidden items-center px-3 text-ink-3 sm:flex">Recife · nov 2026</span>
+      {/* Barra de topo */}
+      <div className="sticky top-0 z-50 flex h-11 items-center gap-2 border-b border-line bg-paper/95 px-4 backdrop-blur">
+        <Logo className="text-[22px]" />
+        <span className="ml-2 rounded-full bg-paper-2 px-2.5 py-0.5 font-mono text-[11px] tracking-[0.06em] text-ink-2 uppercase">sistema visual</span>
+        <span className="rounded-full bg-st-adotado px-2.5 py-0.5 font-mono text-[11px] tracking-[0.06em] uppercase">v0.5 · wip</span>
+        <span className="ml-auto hidden font-mono text-[11px] tracking-[0.06em] text-ink-3 uppercase sm:inline">Recife · nov 2026</span>
       </div>
 
       <div className="md:grid md:grid-cols-[232px_1fr]">
         {/* Índice em árvore ASCII */}
-        <aside className="border-b border-line bg-paper px-3 py-3 text-ink-1 md:sticky md:border-r md:border-b-0 md:top-8 md:h-[calc(100dvh-2rem)] md:overflow-y-auto">
+        <aside className="border-b border-line bg-paper px-3 py-3 text-ink-1 md:sticky md:border-r md:border-b-0 md:top-11 md:h-[calc(100dvh-2.75rem)] md:overflow-y-auto">
           <details className="md:hidden">
-            <summary className="cursor-pointer text-[12px]">▸ índice</summary>
+            <summary className="font-mono cursor-pointer text-[12px]">▸ índice</summary>
             <Tree nodes={index} className="mt-2" />
           </details>
           <div className="hidden flex-col gap-6 md:flex">
             <Tree nodes={index} />
-            <div className="flex flex-col gap-1 text-[11px] text-ink-2">
+            <div className="font-mono flex flex-col gap-1 text-[11px] text-ink-2">
               <p className="text-ink-1">legenda</p>
               {statuses.map((s) => <StatusTag key={s} status={s} className="self-start" />)}
             </div>
@@ -211,7 +210,7 @@ function Demo() {
                   </p>
                   <p className="max-w-[62ch] text-ink-2">
                     O morador marca no mapa a praça abandonada, alguém do bairro adota e um prestador local executa a obra.
-                    A interface é compacta como um caderno de pesquisa: títulos em gótica serifada, dados em mono, leitura em Garamond, status em faixas de cor chapada e o mapa inteiro desenhado em caracteres.
+                    A interface é compacta como um caderno de pesquisa: títulos em gótica serifada, textos em Garamond, rótulos e dados em mono, status em faixas de cor chapada e o mapa inteiro desenhado em caracteres.
                   </p>
                   <KeyValue
                     className="max-w-md"
@@ -222,8 +221,8 @@ function Demo() {
                     ]}
                   />
                 </div>
-                <div className="flex flex-col gap-2 text-[12px] text-ink-2">
-                  <p className="text-ink-1">Ideia central</p>
+                <div className="flex flex-col gap-1 text-[15px] text-ink-2">
+                  <p className="font-mono text-[11px] font-semibold tracking-[0.08em] text-ink-1 uppercase">Ideia central</p>
                   <p>O mapa deixa de ser um tile genérico: ruas viram ─ │, rios viram ~, praças viram ♣ e cada espaço vira um [01] na cor da sua etapa.</p>
                 </div>
               </div>
@@ -236,7 +235,7 @@ function Demo() {
               <div className="grid items-start gap-8 md:grid-cols-[300px_1fr]">
                 <PhoneMock />
                 <div className="flex flex-col gap-4">
-                  <Window title="como a tela funciona" tone="light">
+                  <Window title="como a tela funciona" tone="flat">
                     <ul className="flex flex-col gap-2">
                       <li><span aria-hidden>→ </span>O mapa ASCII ocupa o topo; os espaços aparecem como [01], [02]...</li>
                       <li><span aria-hidden>→ </span>Abaixo, a lista em faixas numeradas na cor do status, como um índice.</li>
@@ -257,23 +256,23 @@ function Demo() {
                 <Chips n="04" name="pedras" colors={[['#a7b3b9', 'pedra'], ['#5f6f7c', 'ardósia · água'], ['#c58f72', 'ferrugem'], ['#cdb97e', 'ocre']]} />
               </div>
               <div className="flex flex-col gap-2">
-                <p className="text-[12px]"><span className="text-ink-3">05.</span> faixas de status</p>
-                <div className="flex flex-col">
+                <p className="font-mono text-[12px]"><span className="text-ink-3">05.</span> faixas de status</p>
+                <div className="flex flex-col overflow-hidden rounded-lg">
                   {statuses.map((s, i) => <Band key={s} n={i + 1} title={statusLabel[s]} status={s} />)}
                 </div>
               </div>
             </Section>
 
-            <Section id="tipos" n="IV" title="Tipos" note="três famílias">
+            <Section id="tipos" n="IV" title="Tipos" note="gótica, Garamond e mono">
               <div className="flex flex-col divide-y divide-line border-y border-line">
                 {[
                   ['Títulos', 'Grenze Gotisch 500', <p className="font-display text-[40px] leading-none font-medium">Praça Maciel Pinheiro</p>],
-                  ['Leitura', 'EB Garamond 17px', <p className="max-w-[52ch] font-book text-[17px] leading-snug">Mato alto perto do coreto e dois bancos quebrados. As crianças da escola ao lado usam a praça todo fim de tarde.</p>],
-                  ['Interface + dados', 'JetBrains Mono 13px', <p>Enviar reporte · 12 reportes · -8.0631, -34.8711</p>],
-                  ['Rótulos', 'Mono 11px caixa alta', <p className="text-[11px] tracking-[0.08em] uppercase">Nome do espaço · status · fotos</p>],
+                  ['Textos', 'EB Garamond 16–17px', <p className="max-w-[52ch] font-book text-[17px] leading-snug">Mato alto perto do coreto e dois bancos quebrados. As crianças da escola ao lado usam a praça todo fim de tarde.</p>],
+                  ['Rótulos e dados', 'JetBrains Mono 11–12px', <p className="font-mono text-[12px]">Enviar reporte · 12 reportes · -8.0631, -34.8711</p>],
+                  ['Etiquetas', 'Mono 11px caixa alta', <p className="font-mono text-[11px] tracking-[0.08em] uppercase">Nome do espaço · status · fotos</p>],
                 ].map(([k, sub, sample]) => (
                   <div key={k as string} className="grid gap-2 py-4 sm:grid-cols-[180px_1fr] sm:items-center">
-                    <div><p>{k}</p><p className="text-[11px] text-ink-3">{sub}</p></div>
+                    <div><p>{k}</p><p className="font-mono text-[11px] text-ink-3">{sub}</p></div>
                     <div className="min-w-0">{sample}</div>
                   </div>
                 ))}
@@ -286,15 +285,15 @@ function Demo() {
                   ['Uncial Antiqua', '"Uncial Antiqua"', 'a da v0.3'],
                 ].map(([n, f, d]) => (
                   <div key={n} className="grid gap-1 py-2 sm:grid-cols-[180px_1fr] sm:items-baseline">
-                    <div><p>{n}</p><p className="text-[11px] text-ink-3">{d}</p></div>
+                    <div><p>{n}</p><p className="font-mono text-[11px] text-ink-3">{d}</p></div>
                     <p className="text-[30px] leading-none font-medium" style={{ fontFamily: f }}>Praça Maciel Pinheiro</p>
                   </div>
                 ))}
               </div>
             </Section>
 
-            <Section id="componentes" n="V" title="Componentes" note="compactos, cantos retos">
-              <div id="botoes" className="flex scroll-mt-12 flex-col gap-3">
+            <Section id="componentes" n="V" title="Componentes" note="compactos, sem bordas">
+              <div id="botoes" className="flex scroll-mt-16 flex-col gap-3">
                 <Label>botões</Label>
                 <div className="flex flex-wrap items-center gap-2">
                   <Button glyph="+">Reportar espaço</Button>
@@ -310,10 +309,10 @@ function Demo() {
                   </Button>
                   <Button disabled>Desabilitado</Button>
                 </div>
-                <Hint>Hover pinta de crema; Tab mostra o contorno de foco em musgo.</Hint>
+                <Hint>Pílulas sem borda; hover clareia, Tab mostra o contorno de foco em musgo.</Hint>
               </div>
 
-              <div id="campos" className="grid scroll-mt-12 items-start gap-5 lg:grid-cols-[1fr_320px]">
+              <div id="campos" className="grid scroll-mt-16 items-start gap-5 lg:grid-cols-[1fr_320px]">
                 <Window title="reportar_espaco.txt">
                   <form className="flex flex-col gap-3" onSubmit={(e) => { e.preventDefault(); toast('reporte enviado. obrigado por cuidar da cidade.') }}>
                     <Field inline label="Nome" error="mínimo de 3 caracteres"><Input defaultValue="Pç" /></Field>
@@ -328,12 +327,12 @@ function Demo() {
                     <div className="flex flex-wrap gap-2 sm:pl-[148px]"><Button>Enviar reporte</Button><Button type="button" variant="link">cancelar</Button></div>
                   </form>
                 </Window>
-                <Window title="entrar" tone="light">
+                <Window title="entrar">
                   <div className="flex flex-col gap-3">
-                    <div role="radiogroup" aria-label="Acesso" className="flex text-[12px]">
+                    <div role="radiogroup" aria-label="Acesso" className="font-mono flex rounded-full bg-paper-2 p-0.5 text-[12px]">
                       {(['login', 'cadastro'] as const).map((m) => (
                         <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => setMode(m)}
-                          className={cn('h-8 flex-1 border border-ink-1 first:border-r-0', mode === m ? 'bg-ink-1 text-paper' : 'hover:bg-hl')}>
+                          className={cn('h-7 flex-1 rounded-full transition-colors', mode === m ? 'bg-paper shadow-soft' : 'text-ink-2 hover:text-ink-1')}>
                           {m === 'login' ? 'entrar' : 'criar conta'}
                         </button>
                       ))}
@@ -353,13 +352,13 @@ function Demo() {
                 </Window>
               </div>
 
-              <div id="status" className="flex scroll-mt-12 flex-col gap-3">
+              <div id="status" className="flex scroll-mt-16 flex-col gap-3">
                 <Label>status</Label>
                 <div className="flex flex-wrap gap-1.5">{statuses.map((s) => <StatusTag key={s} status={s} />)}</div>
                 <div className="flex flex-col gap-2">{statuses.map((s) => <StatusPath key={s} status={s} />)}</div>
               </div>
 
-              <div id="janelas" className="grid scroll-mt-12 items-start gap-5 lg:grid-cols-[380px_1fr]">
+              <div id="janelas" className="grid scroll-mt-16 items-start gap-5 lg:grid-cols-[380px_1fr]">
                 <Window
                   title="espaço · jardim do derby"
                   onClose={() => toast('fecharia o painel', 'info')}
@@ -370,7 +369,7 @@ function Demo() {
                       <Pixel art={spaceArt.jardim} className="size-12 shrink-0" title="Jardim" />
                       <div className="min-w-0">
                         <h3 className="text-[24px] leading-tight">Jardim do Derby</h3>
-                        <p className="text-[11px] tracking-[0.08em] text-ink-2 uppercase">jardim · público</p>
+                        <p className="font-mono text-[11px] tracking-[0.08em] text-ink-2 uppercase">jardim · público</p>
                       </div>
                     </div>
                     <StatusPath status="em_obra" />
@@ -380,9 +379,9 @@ function Demo() {
                         <div key={n} className="flex flex-col gap-1">
                           <p className="font-book text-[16px] leading-snug">{d}</p>
                           <div className="flex gap-1">
-                            {['#d6c9b0', '#a5ad7c', '#a7b3b9'].map((c) => <div key={c} className="size-14" style={{ background: c }} />)}
+                            {['#d6c9b0', '#a5ad7c', '#a7b3b9'].map((c) => <div key={c} className="size-14 rounded-sm" style={{ background: c }} />)}
                           </div>
-                          <p className="text-[11px] text-ink-3">{n} · 2 nov 2026</p>
+                          <p className="font-mono text-[11px] text-ink-3">{n} · 2 nov 2026</p>
                         </div>
                       ))}
                     </div>
@@ -390,7 +389,7 @@ function Demo() {
                 </Window>
                 <div className="flex flex-col gap-3">
                   <Label>janelas, modal e avisos</Label>
-                  <p className="max-w-[56ch] text-ink-2">O painel do espaço é uma janela com barra de título. No celular ela sobe de baixo, sobre o mapa; no computador fica fixa à direita.</p>
+                  <p className="max-w-[56ch] text-ink-2">O painel do espaço é uma folha branca que flutua sobre o mapa, sem borda. No celular ela sobe de baixo, sobre o mapa; no computador fica fixa à direita.</p>
                   <div className="flex flex-wrap gap-2">
                     <Button variant="secondary" size="sm" onClick={() => setModal(true)}>Abrir modal</Button>
                     <Button variant="secondary" size="sm" onClick={() => toast('reporte enviado. obrigado por cuidar da cidade.')}>Aviso ok</Button>
@@ -417,9 +416,9 @@ function Demo() {
               <JourneyGraph />
             </Section>
 
-            <footer className="flex items-center gap-3 border-t border-ink-1 pt-3 text-[11px] text-ink-3">
+            <footer className="font-mono flex items-center gap-3 border-t border-line pt-3 text-[11px] text-ink-3">
               <Pixel art={sprout} className="w-5" />
-              <span>mester · sistema visual v0.4 · proposta para aprovação</span>
+              <span>mester · sistema visual v0.5 · proposta para aprovação</span>
             </footer>
           </div>
         </main>
@@ -428,7 +427,7 @@ function Demo() {
       <Modal
         open={modal}
         onClose={() => setModal(false)}
-        title="quero adotar"
+        title="Quero adotar este espaço"
         footer={<>
           <Button variant="link" onClick={() => setModal(false)}>cancelar</Button>
           <Button size="sm" onClick={() => { setModal(false); toast('interesse registrado') }}>Confirmar</Button>
@@ -443,10 +442,10 @@ function Demo() {
 }
 
 function Label({ children }: { children: ReactNode }) {
-  return <p className="text-[11px] font-semibold tracking-[0.08em] text-ink-2 uppercase">{children}</p>
+  return <p className="font-mono text-[11px] font-semibold tracking-[0.08em] text-ink-2 uppercase">{children}</p>
 }
 function Hint({ children }: { children: ReactNode }) {
-  return <p className="text-[12px] text-ink-3"><span aria-hidden>※ </span>{children}</p>
+  return <p className="text-[14px] text-ink-3 italic"><span aria-hidden className="not-italic">※ </span>{children}</p>
 }
 
 export function Showcase() {

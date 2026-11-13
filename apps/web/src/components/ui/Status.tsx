@@ -21,7 +21,7 @@ const steps = Object.keys(statusLabel) as SpaceStatus[]
 
 export function StatusTag({ status, className }: { status: SpaceStatus; className?: string }) {
   return (
-    <span className={cn('inline-flex h-5 items-center px-1.5 text-[11px] font-semibold tracking-[0.06em] whitespace-nowrap text-ink-1 uppercase', statusBg[status], className)}>
+    <span className={cn('inline-flex h-5 items-center rounded-full px-2 font-mono text-[10.5px] font-semibold tracking-[0.06em] whitespace-nowrap text-ink-1 uppercase', statusBg[status], className)}>
       {statusLabel[status]}
     </span>
   )
@@ -31,16 +31,16 @@ export function StatusTag({ status, className }: { status: SpaceStatus; classNam
 export function StatusPath({ status, className }: { status: SpaceStatus; className?: string }) {
   const current = steps.indexOf(status)
   return (
-    <ol aria-label={`Etapa atual: ${statusLabel[status]}`} className={cn('flex flex-wrap items-center gap-y-1 text-[12px]', className)}>
+    <ol aria-label={`Etapa atual: ${statusLabel[status]}`} className={cn('flex flex-wrap items-center gap-y-1 font-mono text-[11.5px]', className)}>
       {steps.map((st, i) => (
         <li key={st} aria-current={i === current ? 'step' : undefined} className="flex items-center">
-          {i > 0 && <span aria-hidden className={cn('w-3 border-t', i <= current ? 'border-ink-1' : 'border-dashed border-ink-3')} />}
+          {i > 0 && <span aria-hidden className={cn('w-2.5 border-t', i <= current ? 'border-ink-3' : 'border-line')} />}
           <span
             className={cn(
-              'px-1.5 py-px',
+              'rounded-full px-2 py-px',
               i < current && cn(statusBg[st], 'text-ink-1'),
               i === current && 'bg-ink-1 text-paper',
-              i > current && 'border border-dashed border-ink-3 text-ink-3',
+              i > current && 'bg-paper-2 text-ink-3',
             )}
           >
             <span aria-hidden>{i < current ? '■ ' : i === current ? '▸ ' : '□ '}</span>

@@ -1,15 +1,15 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
-@import "@fontsource/courier-prime/400.css";
-@import "@fontsource/courier-prime/700.css";
-@import "@fontsource/courier-prime/400-italic.css";
-@import "@fontsource-variable/caveat";
+@import "@fontsource-variable/eb-garamond/wght.css";
+@import "@fontsource-variable/eb-garamond/wght-italic.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
 
 /*
- * Design system do Mester, v0.2 "caderno anotado".
- * Página branca, texto datilografado, módulos soltos colados por cima
- * e anotações à mão (caneta e marca-texto) nas margens.
- * Tokens viram utilitários do Tailwind (bg-paper, text-pen-red, font-hand, shadow-sheet...).
+ * Design system do Mester, v0.3 "atlas".
+ * Compacto e denso como um caderno de pesquisa: papel quadriculado branco,
+ * interface em mono (dados, ASCII, colchetes), leitura em Garamond,
+ * faixas de cor chapada para o status e ilustrações em pixel.
+ * Tokens viram utilitários do Tailwind (bg-paper, text-ink-2, bg-st-obra, font-mono...).
  */
 @theme {
   /* Tokens antigos, usados pelas telas atuais até a migração */
@@ -18,48 +18,60 @@
   --color-moss: #4f5d2f;
   --font-serif: "Georgia", serif;
 
-  /* Tipografia: máquina de escrever + letra de mão */
-  --font-type: "Courier Prime", "Courier New", ui-monospace, monospace;
-  --font-hand: "Caveat Variable", "Caveat", "Comic Sans MS", cursive;
+  /* Tipografia: Garamond para ler, mono para operar */
+  --font-book: "EB Garamond Variable", "EB Garamond", Garamond, Georgia, serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* Papel */
-  --color-paper: #ffffff;
-  --color-paper-2: #f7f7f5;
-  --color-rule: #dcdcd8;
-  --color-rule-blue: #cfdaf0;
+  /* 01. papel e tinta */
+  --color-paper: #fcfcfa;
+  --color-paper-2: #f3f2ec;
+  --color-grid: #ebe9e1;
+  --color-line: #d8d5ca;
+  --color-ink-1: #1d1a16;
+  --color-ink-2: #5a554c;
+  --color-ink-3: #8f897d;
 
-  /* Tinta de máquina */
-  --color-type-900: #141414;
-  --color-type-600: #555555;
-  --color-type-400: #8c8c8c;
+  /* 02. terra (painéis escuros, como a barra de um editor) */
+  --color-earth-900: #2a1f17;
+  --color-earth-700: #4a3a2c;
+  --color-earth-300: #c9b9a2;
+  --color-earth-100: #ece4d6;
 
-  /* Canetas e marca-texto */
-  --color-pen-red: #c8321e;
-  --color-pen-blue: #1f3c9e;
-  --color-pen-green: #2a7340;
-  --color-pen-ochre: #9a6b12;
-  --color-marker: #ff2e7a;
-  --color-marker-soft: #ffd0e0;
-  --color-kraft: #b89a52;
+  /* 03. verdes */
+  --color-olive-800: #3e4a1c;
+  --color-olive-600: #5f7029;
+  --color-olive-400: #93a84a;
+  --color-lime: #cfe03f;
 
-  /* Quase nada é arredondado: papel tem canto vivo */
+  /* 04. vivas: só para chamar atenção (foco, ação, alerta) */
+  --color-pink: #ff2d87;
+  --color-orange: #ff6a13;
+
+  /* Texto de erro (contraste AA sobre o papel) */
+  --color-alert: #b8400f;
+
+  /* Faixas de status (texto escuro por cima, contraste AA) */
+  --color-st-reportado: #f2784b;
+  --color-st-proposta: #e2cd5a;
+  --color-st-obra: #79a6d6;
+  --color-st-adotado: #9bb85c;
+
+  /* Água e mapa */
+  --color-water: #4f7fb3;
+
+  /* Compacto: cantos retos, quase sem sombra */
   --radius-sm: 2px;
-  --radius-md: 3px;
-
-  /* Sombras de papel colado */
-  --shadow-sheet: 0 1px 1px rgb(0 0 0 / 0.04), 0 10px 24px -14px rgb(0 0 0 / 0.35);
-  --shadow-lifted: 0 2px 2px rgb(0 0 0 / 0.05), 0 22px 40px -18px rgb(0 0 0 / 0.45);
-  --shadow-ink: 4px 4px 0 var(--color-marker);
+  --shadow-window: 0 1px 0 rgb(29 26 22 / 0.06), 0 8px 24px -12px rgb(29 26 22 / 0.28);
 
   --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --animate-drop-in: drop-in 260ms var(--ease-out-soft);
-  --animate-strip-in: strip-in 220ms var(--ease-out-soft);
+  --animate-rise: rise 200ms var(--ease-out-soft);
+  --animate-blink: blink 1s steps(1) infinite;
 
-  @keyframes drop-in {
-    from { opacity: 0; transform: translateY(14px); }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
   }
-  @keyframes strip-in {
-    from { opacity: 0; transform: translateY(10px); }
+  @keyframes blink {
+    50% { opacity: 0; }
   }
 }
 
@@ -73,33 +85,60 @@
   }
   /* Escopo do design system novo (por enquanto só o showcase; vira o body na migração das telas) */
   .ds {
-    background: var(--color-paper);
-    color: var(--color-type-900);
-    font-family: var(--font-type);
-    font-size: 16px;
-    line-height: 1.55;
+    background-color: var(--color-paper);
+    color: var(--color-ink-1);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    font-variant-ligatures: none;
     -webkit-font-smoothing: antialiased;
   }
   .ds :is(h1, h2, h3) {
-    font-family: var(--font-type);
-    font-weight: 700;
-    letter-spacing: 0.01em;
+    font-family: var(--font-book);
+    font-weight: 500;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
-  /* Foco visível e consistente em tudo que é interativo */
-  /* Foco: contorno de marca-texto rosa, impossível de não ver */
+  /* Foco: contorno rosa vivo, impossível de não ver */
   :focus-visible {
-    outline: 3px solid var(--color-marker);
+    outline: 2px solid var(--color-pink);
     outline-offset: 2px;
   }
   ::selection {
-    background: var(--color-marker-soft);
+    background: var(--color-lime);
+    color: var(--color-ink-1);
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 1ms !important;
     }
+  }
+}
+
+@layer components {
+  /* Papel quadriculado de 16px */
+  .grid-paper {
+    background-image:
+      linear-gradient(var(--color-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+    background-size: 16px 16px;
+    background-position: -1px -1px;
+  }
+  /* Pontilhado, para áreas de canvas */
+  .dot-paper {
+    background-image: radial-gradient(var(--color-line) 1px, transparent 1.2px);
+    background-size: 16px 16px;
+  }
+  /* Borda tracejada de figura, como nas pranchas de iluminura */
+  .fig-frame {
+    border: 1.5px dashed var(--color-ink-1);
+  }
+  /* Pixel art nítida */
+  .pixelated {
+    image-rendering: pixelated;
+    shape-rendering: crispEdges;
   }
 }
 
@@ -107,28 +146,4 @@
 .picking .leaflet-container,
 .picking .leaflet-interactive {
   cursor: crosshair;
-}
-
-@layer components {
-  /* Folha pautada (caderno) para áreas de escrita */
-  .ruled {
-    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(1.75rem - 1px), var(--color-rule-blue) calc(1.75rem - 1px), var(--color-rule-blue) 1.75rem);
-    background-attachment: local;
-    line-height: 1.75rem;
-  }
-  /* Papel quadriculado discreto */
-  .grid-paper {
-    background-image:
-      linear-gradient(var(--color-paper-2) 1px, transparent 1px),
-      linear-gradient(90deg, var(--color-paper-2) 1px, transparent 1px);
-    background-size: 24px 24px;
-  }
-  /* Marca-texto atrás do texto, com ponta irregular */
-  .marker {
-    background: linear-gradient(100deg, transparent 0.4em, var(--color-marker-soft) 0.5em, var(--color-marker-soft) calc(100% - 0.3em), transparent calc(100% - 0.2em));
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
-    padding: 0 0.25em;
-    margin: 0 -0.25em;
-  }
 }

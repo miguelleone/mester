@@ -1,49 +1,85 @@
+import type { ReactNode } from 'react'
 import { statusLabel, type SpaceStatus } from '../../api'
 import { cn } from './cn'
-import { Check, Mark, penText, type Pen } from './ink'
 
-// Cada etapa da jornada tem uma caneta: vermelho = problema, ocre = proposta, azul = obra, verde = cuidado
-export const statusPen: Record<SpaceStatus, Pen> = {
-  reportado: 'red',
-  com_proposta: 'ochre',
-  em_obra: 'blue',
-  adotado: 'green',
+// Cada etapa da jornada tem uma faixa de cor chapada (texto escuro por cima)
+export const statusBg: Record<SpaceStatus, string> = {
+  reportado: 'bg-st-reportado',
+  com_proposta: 'bg-st-proposta',
+  em_obra: 'bg-st-obra',
+  adotado: 'bg-st-adotado',
 }
-
+// Mesmas cores em hex, para o mapa (Leaflet não lê classes)
+export const statusHex: Record<SpaceStatus, string> = {
+  reportado: '#f2784b',
+  com_proposta: '#e2cd5a',
+  em_obra: '#79a6d6',
+  adotado: '#9bb85c',
+}
+const short: Record<SpaceStatus, string> = { reportado: 'reportado', com_proposta: 'proposta', em_obra: 'obra', adotado: 'adotado' }
 const steps = Object.keys(statusLabel) as SpaceStatus[]
 
-// Status circulado à caneta
-export function StatusMark({ status, className }: { status: SpaceStatus; className?: string }) {
+export function StatusTag({ status, className }: { status: SpaceStatus; className?: string }) {
   return (
-    <span className={cn('inline-block px-3 py-1.5 text-[12px] font-bold tracking-[0.1em] uppercase', penText[statusPen[status]], className)}>
-      <Mark kind="circle" pen={statusPen[status]} width={1.8}>{statusLabel[status]}</Mark>
+    <span className={cn('inline-flex h-5 items-center px-1.5 text-[11px] font-semibold tracking-[0.06em] whitespace-nowrap text-ink-1 uppercase', statusBg[status], className)}>
+      {statusLabel[status]}
     </span>
   )
 }
 
-// Jornada como lista datilografada: etapas feitas ganham visto, a atual é circulada
-export function StatusSteps({ status, className }: { status: SpaceStatus; className?: string }) {
+// Jornada em linha: [■ reportado]──[■ proposta]──[□ obra]──[□ adotado]
+export function StatusPath({ status, className }: { status: SpaceStatus; className?: string }) {
   const current = steps.indexOf(status)
-  const pen = statusPen[status]
   return (
-    <ol aria-label={`Etapa atual: ${statusLabel[status]}`} className={cn('flex flex-wrap items-center gap-x-2.5 gap-y-2 text-[14px]', className)}>
+    <ol aria-label={`Etapa atual: ${statusLabel[status]}`} className={cn('flex flex-wrap items-center gap-y-1 text-[12px]', className)}>
       {steps.map((st, i) => (
-        <li key={st} aria-current={i === current ? 'step' : undefined} className="flex items-center gap-2.5">
-          {i < current && (
-            <span className="relative pr-2 text-type-600">
-              {statusLabel[st].toLowerCase()}
-              <Check pen={pen} className="absolute -top-3 -right-2.5 size-5" />
-            </span>
-          )}
-          {i === current && (
-            <span className={cn('px-2.5 py-1 font-bold', penText[pen])}>
-              <Mark kind="circle" pen={pen} width={2}>{statusLabel[st].toLowerCase()}</Mark>
-            </span>
-          )}
-          {i > current && <span className="text-type-400">{statusLabel[st].toLowerCase()}</span>}
-          {i < steps.length - 1 && <span aria-hidden className="text-type-400">→</span>}
+        <li key={st} aria-current={i === current ? 'step' : undefined} className="flex items-center">
+          {i > 0 && <span aria-hidden className={cn('w-3 border-t', i <= current ? 'border-ink-1' : 'border-dashed border-ink-3')} />}
+          <span
+            className={cn(
+              'px-1.5 py-px',
+              i < current && cn(statusBg[st], 'text-ink-1'),
+              i === current && 'bg-ink-1 text-paper',
+              i > current && 'border border-dashed border-ink-3 text-ink-3',
+            )}
+          >
+            <span aria-hidden>{i < current ? '■ ' : i === current ? '▸ ' : '□ '}</span>
+            {short[st]}
+          </span>
         </li>
       ))}
     </ol>
+  )
+}
+
+type BandProps = {
+  n: number
+  title: ReactNode
+  status?: SpaceStatus
+  open?: boolean
+  onToggle?: () => void
+  children?: ReactNode
+  dark?: boolean
+}
+
+// Faixa numerada de cor chapada (lista de espaços). Abre para mostrar detalhes.
+export function Band({ n, title, status, open, onToggle, children, dark }: BandProps) {
+  return (
+    <div>
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={onToggle}
+        className={cn(
+          'flex w-full items-center gap-2 px-3 py-2 text-left transition-[filter] hover:brightness-95',
+          dark ? 'bg-earth-900 text-paper' : status ? cn(statusBg[status], 'text-ink-1') : 'bg-paper-2',
+        )}
+      >
+        <sup className="w-5 shrink-0 font-mono text-[10px]">{String(n).padStart(2, '0')}</sup>
+        <span className="min-w-0 flex-1 truncate font-book text-[20px] leading-tight">{title}</span>
+        <span aria-hidden className={cn('flex size-5 shrink-0 items-center justify-center rounded-full border text-[10px] transition-transform', dark ? 'border-paper' : 'border-ink-1', open && 'rotate-180')}>↓</span>
+      </button>
+      {open && children && <div className="animate-rise bg-paper px-3 py-3 pl-10">{children}</div>}
+    </div>
   )
 }

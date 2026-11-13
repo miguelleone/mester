@@ -1,127 +1,168 @@
-import { useState, type CSSProperties, type ReactNode } from 'react'
-import { statusLabel, type SpaceStatus } from '../api'
+import { useState, type ReactNode } from 'react'
+import { spaceTypeLabel, statusLabel, type SpaceStatus, type SpaceType } from '../api'
 import {
-  Arrow, Button, Checkbox, Field, Hand, Highlight, Input, Logo, Mark, Modal, Note, Panel, Select, Sheet, Snapshot,
-  StatusMark, StatusSteps, Tabs, Tag, Tape, Textarea, ToastProvider, useToast, cn,
+  AsciiMap, Band, Button, Checkbox, Field, Input, KeyValue, Logo, Modal, Pixel, Select, StatusPath, StatusTag, Textarea,
+  ToastProvider, Tree, Window, spaceArt, sprout, useToast, cn,
 } from '../components/ui/index'
 
 const statuses = Object.keys(statusLabel) as SpaceStatus[]
+const types = Object.keys(spaceTypeLabel) as SpaceType[]
+
+const pins = [
+  { x: 0.46, y: 0.3, n: 1, status: 'com_proposta' as const },
+  { x: 0.58, y: 0.58, n: 2, status: 'reportado' as const },
+  { x: 0.3, y: 0.42, n: 3, status: 'em_obra' as const },
+  { x: 0.22, y: 0.2, n: 4, status: 'adotado' as const },
+  { x: 0.74, y: 0.74, n: 5, status: 'reportado' as const },
+]
 
 /* ---------- peças do showcase ---------- */
 
-// Cabeçalho de seção datilografado, com o número da folha à direita (como num roteiro)
-function Section({ title, sheet, children, className }: { title: string; sheet: string; children: ReactNode; className?: string }) {
+// Seção numerada em romano, como capítulos de um documento de pesquisa
+function Section({ id, n, title, note, children }: { id: string; n: string; title: string; note?: string; children: ReactNode }) {
   return (
-    <section className={cn('flex flex-col gap-8', className)}>
-      <div className="flex items-baseline justify-between border-b border-type-900 pb-1">
-        <h2 className="text-[15px] tracking-[0.14em] uppercase">{title}</h2>
-        <span className="text-[13px] text-type-600">{sheet}</span>
+    <section id={id} className="flex scroll-mt-12 flex-col gap-5">
+      <div className="flex items-baseline gap-3 sm:gap-4">
+        <span className="w-10 shrink-0 font-book text-[26px] leading-none">{n}</span>
+        <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4 border-b border-ink-1 pb-1">
+          <h2 className="text-[26px] leading-none italic">{title}</h2>
+          {note && <span className="text-[11px] tracking-[0.08em] text-ink-3 uppercase">{note}</span>}
+        </div>
       </div>
-      {children}
+      <div className="flex flex-col gap-5 sm:pl-[52px]">{children}</div>
     </section>
   )
 }
 
-// Recorte de cor chapada, como os pedaços de papel colados na referência
-function Swatch({ hex, name, use, tilt, note, pen = 'blue' }: { hex: string; name: string; use: string; tilt: number; note?: string; pen?: 'blue' | 'red' | 'green' }) {
+function Fig({ n, caption, children, className }: { n: string; caption: ReactNode; children: ReactNode; className?: string }) {
+  return (
+    <figure className={cn('flex min-w-0 flex-col gap-2', className)}>
+      <div className="fig-frame min-w-0 bg-paper p-2 sm:p-3">{children}</div>
+      <figcaption className="text-[12px] text-ink-2"><span className="font-semibold tracking-[0.08em] text-ink-1">FIG. {n}</span> {caption}</figcaption>
+    </figure>
+  )
+}
+
+// Bloco de pixels de cor, como o diagrama de cor da referência
+function Chips({ n, name, colors }: { n: string; name: string; colors: [string, string][] }) {
   return (
     <div className="flex flex-col gap-2">
-      <Sheet tilt={tilt} padding="none" className="overflow-hidden">
-        <div className="h-20 border-b border-rule/70" style={{ background: hex }} />
-        <div className="px-3 py-2">
-          <p className="text-[14px] font-bold">{use}</p>
-          <p className="text-[12px] text-type-600">{name} {hex}</p>
-        </div>
-      </Sheet>
-      {note && <Hand pen={pen} tilt={-2} className="pl-2 text-[20px]">{note}</Hand>}
+      <div className="flex self-start border border-line">
+        {colors.map(([hex, label]) => (
+          <div key={hex} title={`${label} ${hex}`} className="size-10 border-r border-paper last:border-r-0 sm:size-14" style={{ background: hex }} />
+        ))}
+      </div>
+      <p className="text-[12px]"><span className="text-ink-3">{n}.</span> {name}</p>
+      <ul className="text-[11px] leading-[1.5] text-ink-2">
+        {colors.map(([hex, label]) => <li key={hex}>{label} <span className="text-ink-3">{hex}</span></li>)}
+      </ul>
     </div>
   )
 }
 
-// Foto de exemplo: bloco de cor chapada com legenda datilografada (sem imagens externas)
-function PhotoStub({ tone, label, className }: { tone: string; label?: string; className?: string }) {
-  return (
-    <div className={cn('flex aspect-[4/3] items-end p-2', className)} style={{ background: tone }}>
-      {label && <span className="bg-paper/85 px-1 text-[11px] tracking-[0.08em] uppercase">{label}</span>}
-    </div>
-  )
-}
-
-function SpaceNote({ name, type, status, reports, tilt, photo, className, children }: {
-  name: string; type: string; status: SpaceStatus; reports: number; tilt: number; photo: string; className?: string; children?: ReactNode
-}) {
-  return (
-    <div className={cn('relative', className)}>
-      <Sheet tilt={tilt} padding="sm" className="flex flex-col gap-3 transition-transform duration-200 hover:rotate-0">
-        <Snapshot tilt={-tilt * 1.6} className="relative -mt-6 ml-3 w-[70%]">
-          <Tape className="-top-3 left-1/2 w-16 -translate-x-1/2 rotate-3" />
-          <PhotoStub tone={photo} label="foto do morador" />
-        </Snapshot>
-        <div className="flex items-center justify-between gap-2 px-1">
-          <Tag>{type}</Tag>
-          <StatusMark status={status} />
-        </div>
-        <h3 className="px-1 text-[19px] leading-snug">{name}</h3>
-        <p className="px-1 pb-1 text-[13px] text-type-600">Boa Vista, Recife · {reports} reportes</p>
-      </Sheet>
-      {children}
-    </div>
-  )
-}
-
-// Mapa ilustrativo em SVG (ruas, rio, praça) para mostrar a tela principal sem depender de tiles
-function FakeMap() {
-  const pins: [number, number, string][] = [[24, 30, '#c8321e'], [64, 22, '#9a6b12'], [42, 52, '#1f3c9e'], [76, 58, '#2a7340'], [30, 72, '#c8321e']]
-  return (
-    <div className="absolute inset-0 bg-[#f1f1ef]">
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full">
-        <path d="M78 0 Q92 40 100 32 L100 0z" fill="#dde6f2" />
-        <rect x="46" y="60" width="13" height="11" fill="#e1eadb" />
-        <path d="M0 40 Q40 35 100 45" stroke="#fff" strokeWidth="2.6" fill="none" />
-        <path d="M30 0 Q35 50 25 100" stroke="#fff" strokeWidth="2.6" fill="none" />
-        <path d="M0 70 L100 82" stroke="#fff" strokeWidth="1.5" fill="none" />
-        <path d="M70 0 L60 100" stroke="#fff" strokeWidth="1.5" fill="none" />
-      </svg>
-      {pins.map(([x, y, c], i) => (
-        <span key={i} className="absolute size-4 -translate-1/2 rounded-full border-[3px] border-white shadow-[0_1px_3px_rgb(0_0_0/0.35)]" style={{ left: `${x}%`, top: `${y}%`, background: c }} />
-      ))}
-    </div>
-  )
-}
-
+// Celular com a tela principal: mapa ASCII + lista de faixas
 function PhoneMock() {
+  const [open, setOpen] = useState(3)
+  const list: [string, SpaceStatus][] = [
+    ['Praça Maciel Pinheiro', 'com_proposta'],
+    ['Muro da Rua da Aurora', 'reportado'],
+    ['Canteiro da Conde da Boa Vista', 'em_obra'],
+    ['Jardim do Derby', 'adotado'],
+  ]
   return (
-    <div className="relative mx-auto w-[290px] shrink-0 rotate-[2deg]">
-      <Tape className="-top-3 left-8 -rotate-12" />
-      <Tape className="-top-2 right-6 rotate-12" />
-      <div className="border-[9px] border-type-900 bg-type-900 shadow-lifted">
-        <div className="relative h-[560px] overflow-hidden bg-paper">
-          <FakeMap />
-          <div className="absolute inset-x-0 top-0 flex items-center justify-between border-b border-type-900 bg-paper px-4 py-3">
-            <Logo />
-            <span className="text-[12px] font-bold tracking-[0.1em]">ANA M.</span>
-          </div>
-          {/* anotação solta sobre o mapa */}
-          <div className="absolute top-[22%] left-[38%] flex flex-col items-start">
-            <Hand pen="red" tilt={-6} className="text-[22px]">tá feio aqui!</Hand>
-            <Arrow pen="red" className="-mt-1 -ml-9 w-12 -scale-x-100 rotate-[20deg]" />
-          </div>
-          <div className="absolute inset-x-2 bottom-2">
-            <div className="relative border border-rule bg-paper px-4 pt-5 pb-4 shadow-lifted">
-              <Tape className="-top-3 left-1/2 w-16 -translate-x-1/2 rotate-2" />
-              <p className="text-[11px] font-bold tracking-[0.12em] text-type-600 uppercase">Praça · pública</p>
-              <h3 className="mb-2 text-[18px] leading-tight">Praça Maciel Pinheiro</h3>
-              <StatusSteps status="com_proposta" className="text-[12px]" />
-              <Button block size="sm" className="mt-4">Quero adotar</Button>
-            </div>
-          </div>
+    <div className="mx-auto w-[300px] shrink-0 rounded-[38px] border border-ink-3/40 bg-[#e9e8e3] p-2 shadow-window">
+      <div className="h-[600px] overflow-hidden rounded-[30px] border-[6px] border-ink-1 bg-paper">
+        <div className="flex items-center justify-between px-4 pt-5 pb-2">
+          <Logo className="text-[22px]" />
+          <span className="flex items-center gap-1 text-[11px]">
+            <span className="rounded-full bg-st-adotado px-2.5 py-0.5">Menu</span>
+            <span className="flex size-5 items-center justify-center rounded-full bg-st-adotado">+</span>
+          </span>
         </div>
+        <div className="border-y border-ink-1 bg-paper px-1 py-1">
+          <AsciiMap rows={15} size={9} pins={pins.slice(0, 4)} />
+        </div>
+        <p className="px-3 pt-2 pb-1 text-[10px] tracking-[0.08em] text-ink-2 uppercase">4 espaços perto de você</p>
+        {list.map(([name, st], i) => (
+          <Band key={name} n={i + 1} title={name} status={st} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)}>
+            <div className="flex flex-col gap-1.5 text-[11px]">
+              <p className="font-book text-[14px] leading-snug">Mato alto perto do coreto e dois bancos quebrados.</p>
+              <p><span aria-hidden>→ </span>12 reportes · desde 3 out</p>
+              <p><span aria-hidden>→ </span>Seu Antônio, jardineiro</p>
+              <p className="text-ink-2">[ <span className="underline">ver diário da obra</span> ]</p>
+            </div>
+          </Band>
+        ))}
       </div>
     </div>
   )
 }
 
-const tilt = (deg: number) => ({ '--tilt': `${deg}deg` }) as CSSProperties
+// Diagrama de hipertexto: a jornada como nós ligados por setas rotuladas
+function JourneyGraph() {
+  const nodes = [
+    { id: 'm', x: 10, y: 20, w: 124, label: 'morador', sub: 'reporta + fotos' },
+    { id: 'r', x: 248, y: 20, w: 124, label: '■ reportado', st: 'reportado' as const },
+    { id: 'p', x: 486, y: 20, w: 124, label: '■ com proposta', st: 'com_proposta' as const },
+    { id: 'a', x: 486, y: 140, w: 124, label: 'adotante', sub: 'quer adotar' },
+    { id: 'o', x: 248, y: 140, w: 124, label: '■ em obra', st: 'em_obra' as const },
+    { id: 's', x: 10, y: 140, w: 124, label: 'prestador', sub: 'diário c/ fotos' },
+    { id: 'd', x: 248, y: 250, w: 124, label: '■ adotado', st: 'adotado' as const },
+  ]
+  const fill: Record<SpaceStatus, string> = { reportado: '#f2784b', com_proposta: '#e2cd5a', em_obra: '#79a6d6', adotado: '#9bb85c' }
+  const at = (id: string) => nodes.find((n) => n.id === id)!
+  const links: [string, string, string][] = [['m', 'r', 'marca no mapa'], ['r', 'p', 'gestor analisa'], ['p', 'a', 'orçamento'], ['a', 'o', 'contrata'], ['s', 'o', 'executa'], ['o', 'd', 'antes e depois']]
+  const anchor = (a: (typeof nodes)[number], b: (typeof nodes)[number]) => {
+    const ac = [a.x + a.w / 2, a.y + 20], bc = [b.x + b.w / 2, b.y + 20]
+    if (Math.abs(ac[1] - bc[1]) < 5) return [ac[0] < bc[0] ? a.x + a.w : a.x, ac[1], ac[0] < bc[0] ? b.x : b.x + b.w, bc[1]]
+    if (Math.abs(ac[0] - bc[0]) < 5) return [ac[0], ac[1] < bc[1] ? a.y + 40 : a.y, bc[0], ac[1] < bc[1] ? b.y : b.y + 40]
+    return [ac[0], a.y + 40, bc[0] + (ac[0] < bc[0] ? -20 : 20), b.y]
+  }
+  return (
+    <div className="dot-paper overflow-x-auto border border-line">
+      <svg viewBox="0 0 620 300" className="block w-full max-w-[680px] min-w-[560px] font-mono text-[11px]" role="img" aria-label="Jornada: morador reporta, gestor analisa, adotante contrata, prestador executa, espaço adotado">
+        <defs>
+          <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L8 4 L0 8 z" fill="#1d1a16" />
+          </marker>
+        </defs>
+        {links.map(([a, b, label]) => {
+          const [x1, y1, x2, y2] = anchor(at(a), at(b))
+          return (
+            <g key={a + b}>
+              <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#1d1a16" strokeWidth="1" markerEnd="url(#arr)" />
+              {y1 === y2
+                ? <text x={(x1 + x2) / 2} y={y1 - 6} textAnchor="middle" fill="#5a554c">{label}</text>
+                : <text x={x1 + 6} y={(y1 + y2) / 2 + 4} fill="#5a554c">{label}</text>}
+            </g>
+          )
+        })}
+        {nodes.map((n) => (
+          <g key={n.id}>
+            <rect x={n.x} y={n.y} width={n.w} height={40} fill={n.st ? fill[n.st] : '#fcfcfa'} stroke="#1d1a16" />
+            <rect x={n.x} y={n.y} width={n.w} height={14} fill={n.st ? 'none' : '#2a1f17'} />
+            <text x={n.x + 6} y={n.y + 11} fill={n.st ? '#1d1a16' : '#ece4d6'} fontWeight="600">{n.label}</text>
+            {n.sub && <text x={n.x + 6} y={n.y + 31} fill="#5a554c">{n.sub}</text>}
+          </g>
+        ))}
+      </svg>
+    </div>
+  )
+}
+
+const index = [
+  { label: 'mester', children: [
+    { label: 'I. abertura', href: '#abertura' },
+    { label: 'II. a tela', href: '#tela' },
+    { label: 'III. cores', href: '#cores' },
+    { label: 'IV. tipos', href: '#tipos' },
+    { label: 'V. componentes', href: '#componentes', children: [
+      { label: 'botões', href: '#botoes' }, { label: 'campos', href: '#campos' }, { label: 'status', href: '#status' }, { label: 'janelas', href: '#janelas' },
+    ] },
+    { label: 'VI. ilustrações', href: '#ilustracoes' },
+    { label: 'VII. jornada', href: '#jornada' },
+  ] },
+]
 
 /* ---------- página ---------- */
 
@@ -132,263 +173,266 @@ function Demo() {
   const [loading, setLoading] = useState(false)
 
   return (
-    <div className="ds min-h-dvh overflow-x-clip">
-      <div className="mx-auto flex max-w-6xl flex-col gap-20 px-4 pt-6 pb-16 sm:px-8 sm:pt-10">
+    <div className="ds min-h-dvh">
+      {/* Barra de topo, como a aba de modo de um editor */}
+      <div className="sticky top-0 z-50 flex h-8 items-stretch border-b border-ink-1 bg-paper text-[11px] font-semibold tracking-[0.08em] uppercase">
+        <span className="flex items-center bg-orange px-2.5 text-ink-1">Mester</span>
+        <span className="flex items-center bg-earth-900 px-2.5 text-earth-100">Sistema visual</span>
+        <span className="flex items-center px-2.5 text-ink-2">v0.3 · wip</span>
+        <span className="ml-auto hidden items-center px-3 text-ink-3 sm:flex">Recife · nov 2026</span>
+      </div>
 
-        {/* Linha de topo datilografada, como cabeçalho de roteiro */}
-        <div className="flex items-center justify-between gap-4 text-[13px] tracking-[0.08em] uppercase">
-          <span>Mester · caderno de campo</span>
-          <span className="hidden sm:inline">Recife, novembro de 2026</span>
-          <span className="flex items-center gap-3">
-            <span>A2</span>
-            <Hand pen="red" tilt={-8} className="text-[24px] normal-case">
-              <Mark kind="circle" pen="red" width={1.6}>v0.2</Mark>
-            </Hand>
-          </span>
-        </div>
-
-        {/* Abertura */}
-        <header className="grid items-start gap-14 md:grid-cols-12 md:gap-8">
-          <div className="relative flex flex-col gap-6 md:col-span-7 md:pt-6">
-            <Logo tagline className="self-start" />
-            <h1 className="text-[34px] leading-[1.1] sm:text-[48px]">
-              Espaços da cidade à espera de{' '}
-              <Mark kind="circle" pen="red" width={2.4}>cuidado</Mark>.
-            </h1>
-            <div className="flex max-w-[60ch] flex-col gap-4 text-[16px] leading-[1.7]">
-              <p>
-                <span className="font-bold">E então,</span> a moradora passa pela praça abandonada, marca o ponto no mapa e
-                fotografa o mato alto e os bancos quebrados ....
-              </p>
-              <p>
-                <span className="font-bold">E então,</span> alguém do bairro <Highlight>decide adotar</Highlight>, um jardineiro
-                assume a obra e cada etapa vai sendo anotada <span className="line-through decoration-pen-red decoration-2">no relatório</span>{' '}
-                <Hand pen="red" tilt={-3} className="text-[22px]">no caderno</Hand> do espaço.
-              </p>
+      <div className="md:grid md:grid-cols-[232px_1fr] md:bg-[linear-gradient(to_right,var(--color-earth-900)_232px,transparent_232px)]">
+        {/* Índice em árvore ASCII */}
+        <aside className="bg-earth-900 px-3 py-3 text-earth-100 md:sticky md:top-8 md:h-[calc(100dvh-2rem)] md:overflow-y-auto">
+          <details className="md:hidden">
+            <summary className="cursor-pointer text-[12px]">▸ índice</summary>
+            <Tree nodes={index} className="mt-2" />
+          </details>
+          <div className="hidden flex-col gap-6 md:flex">
+            <Tree nodes={index} />
+            <div className="flex flex-col gap-1 text-[11px] text-earth-300">
+              <p className="text-earth-100">legenda</p>
+              {statuses.map((s) => <StatusTag key={s} status={s} className="self-start" />)}
             </div>
-            {/* nota de margem: à esquerda no desktop largo, entre blocos no celular */}
-            <div className="flex items-start gap-2 self-start pl-6 sm:pl-24">
-              <Arrow pen="blue" className="mt-1 w-10 shrink-0 -scale-x-100" />
-              <Hand pen="blue" tilt={-3}>texto datilografado = o sistema falando</Hand>
-            </div>
+            <Pixel art={sprout} className="mt-auto w-10" />
           </div>
+        </aside>
 
-          <div className="relative md:col-span-5">
-            <PhoneMock />
-            <div className="mt-8 flex items-start justify-center gap-2 md:absolute md:top-[430px] md:-left-44 md:mt-0 md:w-48 md:flex-col md:items-end">
-              <Hand pen="green" tilt={3}>o mapa é a página; o espaço é um bilhete colado por cima</Hand>
-              <Arrow pen="green" className="hidden w-14 rotate-[20deg] md:block" />
-            </div>
-          </div>
-        </header>
+        <main className="grid-paper min-w-0">
+          <div className="mx-auto flex max-w-[980px] flex-col gap-16 px-4 py-10 sm:px-8">
 
-        {/* Princípios em bilhetes soltos */}
-        <Section title="Regras do caderno." sheet="A3">
-          <div className="grid gap-10 sm:grid-cols-3 sm:gap-6">
-            {[
-              ['a)', 'Datilografado é o sistema', 'Nomes, dados, botões e textos que o Mester escreve usam máquina de escrever.', -1.4, 'center'],
-              ['b)', 'À mão são as pessoas', 'Avisos, erros, ênfases e recados aparecem como anotação de caneta na margem.', 1, 'left'],
-              ['c)', 'Módulos soltos', 'Painéis e cartões são folhas coladas por cima, levemente tortas, com fita.', -0.6, 'right'],
-            ].map(([n, t, d, deg, tape]) => (
-              <Sheet key={n as string} tilt={deg as number} tape={tape as 'left'} className="flex flex-col gap-2">
-                <Hand pen="red" tilt={0} className="text-[28px]">{n}</Hand>
-                <h3 className="text-[17px]">{t}</h3>
-                <p className="text-[14px] leading-relaxed text-type-600">{d}</p>
-              </Sheet>
-            ))}
-          </div>
-        </Section>
-
-        <Section title="Tintas." sheet="A4">
-          <div className="flex flex-col gap-10">
-            <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-4 lg:grid-cols-5">
-              <Swatch hex="#ffffff" name="paper" use="Papel" tilt={-1} note="branco, sem bege" />
-              <Swatch hex="#141414" name="type-900" use="Tinta da máquina" tilt={1.2} />
-              <Swatch hex="#555555" name="type-600" use="Texto secundário" tilt={-0.5} />
-              <Swatch hex="#cfdaf0" name="rule-blue" use="Pauta do caderno" tilt={0.8} />
-              <Swatch hex="#ff2e7a" name="marker" use="Marca-texto" tilt={-1.6} note="foco e destaque" pen="red" />
-            </div>
-            <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-4">
-              <Swatch hex="#c8321e" name="pen-red" use="Caneta vermelha" tilt={1} note="problema / reportado" pen="red" />
-              <Swatch hex="#9a6b12" name="pen-ochre" use="Caneta ocre" tilt={-1.2} note="tem proposta" />
-              <Swatch hex="#1f3c9e" name="pen-blue" use="Caneta azul" tilt={0.6} note="em obra / recados" />
-              <Swatch hex="#2a7340" name="pen-green" use="Caneta verde" tilt={-0.8} note="adotado, cuidado" pen="green" />
-            </div>
-          </div>
-        </Section>
-
-        <Section title="Letras." sheet="A5">
-          <div className="grid items-start gap-10 md:grid-cols-12 md:gap-6">
-            <Sheet tilt={-0.8} tape="left" className="flex flex-col gap-4 md:col-span-7">
-              <p className="text-[12px] tracking-[0.12em] text-type-600 uppercase">Courier Prime · o sistema</p>
-              <p className="text-[40px] leading-none font-bold">Praça do Sol</p>
-              <p className="text-[24px] leading-tight font-bold">Proposta de revitalização</p>
-              <p className="max-w-[52ch] text-[16px] leading-[1.7]">
-                Texto corrido em 16px com entrelinha generosa. Feita para roteiros, a Courier Prime lê bem em tela pequena e dá o tom de documento de trabalho.
-              </p>
-              <p className="text-[13px] tracking-[0.12em] uppercase">Rótulo · 13px · caixa alta</p>
-            </Sheet>
-            <div className="flex flex-col gap-6 md:col-span-5 md:pt-10">
-              <Sheet tilt={1.4} paper="ruled" className="flex flex-col gap-1">
-                <p className="text-[12px] tracking-[0.12em] text-type-600 uppercase">Caveat · as pessoas</p>
-                <Hand pen="blue" tilt={-1} className="text-[34px]">Também passo aqui todo dia!</Hand>
-                <Hand pen="red" tilt={1} className="text-[26px]">mínimo de 3 letras</Hand>
-                <Hand pen="green" tilt={-2} className="text-[26px]">adotado pela padaria ✓</Hand>
-              </Sheet>
-              <Hand pen="red" tilt={-2} className="self-end pr-4">
-                letra de mão nunca em texto longo, só recados curtos
-              </Hand>
-            </div>
-          </div>
-        </Section>
-
-        <Section title="Botões." sheet="A6">
-          <Sheet paper="grid" className="flex flex-col gap-8">
-            <div className="flex flex-wrap items-center gap-4">
-              <Button>Enviar reporte</Button>
-              <Button variant="secondary">Ver proposta</Button>
-              <Button variant="ghost">Cancelar</Button>
-              <Button variant="danger">Remover</Button>
-            </div>
-            <div className="flex flex-wrap items-center gap-4">
-              <Button size="lg">+ Reportar espaço</Button>
-              <Button size="sm" variant="secondary">Pequeno</Button>
-              <Button loading={loading} onClick={() => { setLoading(true); setTimeout(() => setLoading(false), 1600) }}>
-                {loading ? 'Enviando' : 'Clique p/ carregar'}
-              </Button>
-              <Button disabled>Desabilitado</Button>
-            </div>
-            <div className="flex items-start gap-2">
-              <Arrow pen="red" className="w-10 shrink-0 -scale-y-100 rotate-[-30deg]" />
-              <Hand pen="red" tilt={-1}>passe o mouse: o botão levanta e deixa rastro de marca-texto. Tab mostra o foco rosa.</Hand>
-            </div>
-          </Sheet>
-        </Section>
-
-        <Section title="Formulários." sheet="A7">
-          <div className="grid items-start gap-12 md:grid-cols-12 md:gap-0">
-            <Sheet tilt={-1.2} tape="center" lifted className="flex flex-col gap-5 md:col-span-5 md:z-10">
-              <Tabs label="Acesso" value={mode} onChange={setMode} options={[{ value: 'login', label: 'Entrar' }, { value: 'cadastro', label: 'Criar conta' }]} />
-              {mode === 'cadastro' && <Field label="Nome"><Input placeholder="como quer ser chamado" /></Field>}
-              <Field label="Email"><Input type="email" placeholder="voce@email.com" /></Field>
-              <Field label="Senha" hint={mode === 'cadastro' ? 'mínimo de 8 caracteres' : undefined}><Input type="password" /></Field>
-              {mode === 'cadastro' && (
-                <Field label="Você é">
-                  <Select defaultValue="morador">
-                    <option value="morador">morador</option>
-                    <option value="adotante">quem quer adotar um espaço</option>
-                    <option value="prestador">prestador de serviço</option>
-                  </Select>
-                </Field>
-              )}
-              <Button block>{mode === 'login' ? 'Entrar' : 'Criar conta'}</Button>
-            </Sheet>
-            <Sheet tilt={0.8} className="flex flex-col gap-5 md:col-span-7 md:-ml-6 md:mt-14">
-              <h3 className="text-[20px]">Reportar um espaço</h3>
-              <Note tone="info">toque no mapa pra marcar onde fica</Note>
-              <Field label="Nome do espaço" error="mínimo de 3 letras"><Input defaultValue="Pç" /></Field>
-              <Field label="O que está acontecendo?" hint="lixo, mato alto, pichação, bancos quebrados..."><Textarea rows={4} defaultValue="Mato alto perto do coreto e dois bancos quebrados." /></Field>
-              <Field label="Ponto de referência" optional><Input disabled placeholder="campo desabilitado" /></Field>
-              <Checkbox label="É um espaço público" description="praças, canteiros e muros da prefeitura" defaultChecked />
-              <Note tone="error">não deu pra enviar. confere a conexão?</Note>
-              <div className="flex flex-wrap gap-3"><Button>Enviar reporte</Button><Button variant="ghost">Cancelar</Button></div>
-            </Sheet>
-          </div>
-        </Section>
-
-        <Section title="A jornada de um espaço." sheet="A8">
-          <div className="grid items-start gap-10 md:grid-cols-12 md:gap-6">
-            <Sheet tilt={-0.6} className="flex flex-col gap-5 md:col-span-7">
-              {statuses.map((s) => <StatusSteps key={s} status={s} />)}
-            </Sheet>
-            <div className="flex flex-col gap-4 md:col-span-5 md:pt-6">
-              <div className="flex flex-wrap gap-3">{statuses.map((s) => <StatusMark key={s} status={s} />)}</div>
-              <Hand pen="blue" tilt={-1.5}>cada etapa tem a sua caneta. no mapa, o pino usa a mesma cor.</Hand>
-            </div>
-          </div>
-        </Section>
-
-        <Section title="Espaços." sheet="A9">
-          <div className="grid gap-14 pt-4 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
-            <SpaceNote name="Praça Maciel Pinheiro" type="Praça" status="com_proposta" reports={7} tilt={-1.2} photo="#b89a52" />
-            <SpaceNote name="Muro da Rua da Aurora" type="Muro" status="reportado" reports={3} tilt={1} photo="#9aa3a8" className="lg:mt-12">
-              <Hand pen="red" tilt={-5} className="absolute -top-8 right-0 text-[22px]">urgente!</Hand>
-            </SpaceNote>
-            <SpaceNote name="Canteiro da Av. Conde da Boa Vista" type="Canteiro" status="em_obra" reports={12} tilt={-0.4} photo="#7f9273" />
-          </div>
-        </Section>
-
-        <Section title="Painel, modal e avisos." sheet="A10">
-          <div className="grid items-start gap-12 md:grid-cols-12 md:gap-8">
-            <Panel
-              eyebrow="Jardim · público"
-              title="Jardim do Derby"
-              onClose={() => toast('fecharia o painel', 'info')}
-              className="max-h-[600px] md:col-span-5"
-              footer={<Button block variant="secondary" onClick={() => toast('abriria o diário da obra', 'info')}>Ver diário da obra</Button>}
-            >
-              <div className="flex flex-col gap-6">
-                <StatusSteps status="adotado" />
-                <div className="relative border-2 border-pen-green px-4 py-3">
-                  <p className="text-[15px]">Adotado pela <span className="font-bold">Associação de Moradores do Derby</span>.</p>
-                  <Hand pen="green" tilt={-2} className="mt-1 text-[20px]">placa entalhada pelo Seu Antônio, marceneiro do bairro</Hand>
+            <Section id="abertura" n="I" title="Abertura" note="o que é o mester">
+              <div className="grid items-start gap-8 lg:grid-cols-[1fr_300px]">
+                <div className="flex flex-col gap-4">
+                  <p className="max-w-[30ch] font-book text-[34px] leading-[1.1] sm:text-[42px]">
+                    “Espaços da cidade à espera de cuidado, e as pessoas que podem cuidar deles.”
+                  </p>
+                  <p className="max-w-[62ch] text-ink-2">
+                    O morador marca no mapa a praça abandonada, alguém do bairro adota e um prestador local executa a obra.
+                    A interface é compacta como um caderno de pesquisa: dados em mono, leitura em Garamond, status em faixas de cor chapada e o mapa inteiro desenhado em caracteres.
+                  </p>
+                  <KeyValue
+                    className="max-w-md"
+                    rows={[
+                      ['cidade', 'Recife, PE'],
+                      ['espaços', '128 reportados · 9 adotados'],
+                      ['fase', 'MVP de adoção'],
+                    ]}
+                  />
                 </div>
-                <div className="flex flex-col gap-5">
-                  <h3 className="text-[15px] tracking-[0.1em] uppercase">3 reportes</h3>
-                  {[['Ana Lima', 'Mato alto e bancos quebrados perto do coreto.', '#b89a52'], ['João Melo', 'Lixo acumulado na entrada da Rua do Futuro.', '#9aa3a8']].map(([n, d, c], i) => (
-                    <div key={n} className="flex flex-col gap-2 border-l border-type-400 pl-3">
-                      <p className="text-[15px] leading-relaxed">{d}</p>
-                      <div className="flex gap-2">
-                        <Snapshot tilt={i ? 2 : -2} className="w-20"><PhotoStub tone={c} /></Snapshot>
-                        <Snapshot tilt={i ? -1 : 1.5} className="w-20"><PhotoStub tone="#7f9273" /></Snapshot>
-                      </div>
-                      <p className="text-[13px] text-type-600">{n} · 2 nov 2026</p>
+                <div className="flex flex-col gap-2 text-[12px] text-ink-2">
+                  <p className="text-ink-1">Ideia central</p>
+                  <p>O mapa deixa de ser um tile genérico: ruas viram ─ │, rios viram ~, praças viram ♣ e cada espaço vira um [01] na cor da sua etapa.</p>
+                </div>
+              </div>
+              <Fig n="01" caption="Centro do Recife desenhado em caracteres. Cada [nº] é um espaço reportado, na cor da etapa em que está.">
+                <AsciiMap rows={30} pins={pins} />
+              </Fig>
+            </Section>
+
+            <Section id="tela" n="II" title="A tela" note="celular primeiro">
+              <div className="grid items-start gap-8 md:grid-cols-[300px_1fr]">
+                <PhoneMock />
+                <div className="flex flex-col gap-4">
+                  <Window title="como a tela funciona" tone="light">
+                    <ul className="flex flex-col gap-2">
+                      <li><span aria-hidden>→ </span>O mapa ASCII ocupa o topo; os espaços aparecem como [01], [02]...</li>
+                      <li><span aria-hidden>→ </span>Abaixo, a lista em faixas numeradas na cor do status, como um índice.</li>
+                      <li><span aria-hidden>→ </span>Tocar numa faixa abre os detalhes ali mesmo, sem trocar de tela.</li>
+                      <li><span aria-hidden>→ </span>Ações ficam entre colchetes: <span className="whitespace-nowrap">[ quero adotar ]</span>.</li>
+                    </ul>
+                  </Window>
+                  <Hint>Toque nas faixas do celular ao lado para abrir e fechar.</Hint>
+                </div>
+              </div>
+            </Section>
+
+            <Section id="cores" n="III" title="Cores" note="papel branco, terra, verdes e vivas">
+              <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
+                <Chips n="01" name="papel e tinta" colors={[['#fcfcfa', 'papel'], ['#ebe9e1', 'grade'], ['#5a554c', 'tinta 2'], ['#1d1a16', 'tinta']]} />
+                <Chips n="02" name="terra" colors={[['#ece4d6', 'terra 100'], ['#c9b9a2', 'terra 300'], ['#4a3a2c', 'terra 700'], ['#2a1f17', 'terra 900']]} />
+                <Chips n="03" name="verdes" colors={[['#cfe03f', 'lima'], ['#93a84a', 'oliva 400'], ['#5f7029', 'oliva 600'], ['#3e4a1c', 'oliva 800']]} />
+                <Chips n="04" name="vivas" colors={[['#ff2d87', 'rosa · foco'], ['#ff6a13', 'laranja'], ['#b8400f', 'alerta'], ['#4f7fb3', 'água']]} />
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-[12px]"><span className="text-ink-3">05.</span> faixas de status</p>
+                <div className="flex flex-col">
+                  {statuses.map((s, i) => <Band key={s} n={i + 1} title={statusLabel[s]} status={s} />)}
+                </div>
+              </div>
+            </Section>
+
+            <Section id="tipos" n="IV" title="Tipos" note="duas famílias">
+              <div className="flex flex-col divide-y divide-line border-y border-line">
+                {[
+                  ['Títulos', 'EB Garamond itálico', <p className="font-book text-[36px] leading-none italic">Praça Maciel Pinheiro</p>],
+                  ['Leitura', 'EB Garamond 17px', <p className="max-w-[52ch] font-book text-[17px] leading-snug">Mato alto perto do coreto e dois bancos quebrados. As crianças da escola ao lado usam a praça todo fim de tarde.</p>],
+                  ['Interface + dados', 'JetBrains Mono 13px', <p>Enviar reporte · 12 reportes · -8.0631, -34.8711</p>],
+                  ['Rótulos', 'Mono 11px caixa alta', <p className="text-[11px] tracking-[0.08em] uppercase">Nome do espaço · status · fotos</p>],
+                ].map(([k, sub, sample]) => (
+                  <div key={k as string} className="grid gap-2 py-4 sm:grid-cols-[180px_1fr] sm:items-center">
+                    <div><p>{k}</p><p className="text-[11px] text-ink-3">{sub}</p></div>
+                    <div className="min-w-0">{sample}</div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+
+            <Section id="componentes" n="V" title="Componentes" note="compactos, cantos retos">
+              <div id="botoes" className="flex scroll-mt-12 flex-col gap-3">
+                <Label>botões</Label>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button glyph="+">Reportar espaço</Button>
+                  <Button variant="secondary">Ver proposta</Button>
+                  <Button variant="link">quero adotar</Button>
+                  <Button variant="danger">Remover</Button>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button size="sm">Pequeno</Button>
+                  <Button size="sm" variant="secondary" glyph="→">Abrir no mapa</Button>
+                  <Button loading={loading} onClick={() => { setLoading(true); setTimeout(() => setLoading(false), 1800) }}>
+                    {loading ? 'Enviando' : 'Clique p/ carregar'}
+                  </Button>
+                  <Button disabled>Desabilitado</Button>
+                </div>
+                <Hint>Hover pinta de lima; Tab mostra o foco rosa.</Hint>
+              </div>
+
+              <div id="campos" className="grid scroll-mt-12 items-start gap-5 lg:grid-cols-[1fr_320px]">
+                <Window title="reportar_espaco.txt">
+                  <form className="flex flex-col gap-3" onSubmit={(e) => { e.preventDefault(); toast('reporte enviado. obrigado por cuidar da cidade.') }}>
+                    <Field inline label="Nome" error="mínimo de 3 caracteres"><Input defaultValue="Pç" /></Field>
+                    <Field inline label="Tipo">
+                      <Select defaultValue="praca">{types.map((t) => <option key={t} value={t}>{spaceTypeLabel[t]}</option>)}</Select>
+                    </Field>
+                    <Field inline label="O que acontece" hint="lixo, mato alto, pichação, bancos quebrados...">
+                      <Textarea rows={3} defaultValue="Mato alto perto do coreto e dois bancos quebrados." />
+                    </Field>
+                    <Field inline label="Referência" optional><Input placeholder="ex.: em frente à escola" /></Field>
+                    <div className="sm:pl-[148px]"><Checkbox label="É um espaço público" description="praças, canteiros e muros da prefeitura" defaultChecked /></div>
+                    <div className="flex flex-wrap gap-2 sm:pl-[148px]"><Button>Enviar reporte</Button><Button type="button" variant="link">cancelar</Button></div>
+                  </form>
+                </Window>
+                <Window title="entrar" tone="light">
+                  <div className="flex flex-col gap-3">
+                    <div role="radiogroup" aria-label="Acesso" className="flex text-[12px]">
+                      {(['login', 'cadastro'] as const).map((m) => (
+                        <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => setMode(m)}
+                          className={cn('h-8 flex-1 border border-ink-1 first:border-r-0', mode === m ? 'bg-ink-1 text-paper' : 'hover:bg-lime')}>
+                          {m === 'login' ? 'entrar' : 'criar conta'}
+                        </button>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                    {mode === 'cadastro' && <Field label="Nome"><Input /></Field>}
+                    <Field label="Email"><Input type="email" placeholder="voce@email.com" /></Field>
+                    <Field label="Senha" hint={mode === 'cadastro' ? 'mínimo de 8 caracteres' : undefined}><Input type="password" /></Field>
+                    {mode === 'cadastro' && (
+                      <Field label="Você é">
+                        <Select defaultValue="morador">
+                          <option value="morador">morador</option><option value="adotante">quer adotar um espaço</option><option value="prestador">prestador de serviço</option>
+                        </Select>
+                      </Field>
+                    )}
+                    <Button block>{mode === 'login' ? 'Entrar' : 'Criar conta'}</Button>
+                  </div>
+                </Window>
               </div>
-            </Panel>
-            <div className="flex flex-col gap-8 md:col-span-7 md:pt-8">
-              <Sheet tilt={0.6} className="flex flex-col gap-5">
-                <p className="text-[15px] leading-relaxed">
-                  O painel ao lado é a página do espaço colada sobre o mapa: sobe de baixo no celular e fica solto à direita no computador.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Button variant="secondary" onClick={() => setModal(true)}>Abrir modal</Button>
-                  <Button variant="secondary" onClick={() => toast('reporte enviado. obrigado por cuidar da cidade.')}>Aviso ok</Button>
-                  <Button variant="secondary" onClick={() => toast('a imagem pode ter no máximo 5 MB', 'error')}>Aviso de erro</Button>
-                </div>
-              </Sheet>
-              <div className="flex items-start gap-2 pl-4" style={tilt(0)}>
-                <Arrow pen="red" className="w-12 shrink-0 -scale-x-100" />
-                <Hand pen="red" tilt={-2}>os avisos chegam como tira de papel no rodapé, com a palavra à mão</Hand>
-              </div>
-            </div>
-          </div>
-        </Section>
 
-        <footer className="flex flex-col items-center gap-2 pt-4 text-center">
-          <p className="text-[13px] tracking-[0.12em] uppercase">— fim da folha A10 —</p>
-          <Hand pen="blue" tilt={-3} className="text-[24px]">risca, anota e me devolve!</Hand>
-        </footer>
+              <div id="status" className="flex scroll-mt-12 flex-col gap-3">
+                <Label>status</Label>
+                <div className="flex flex-wrap gap-1.5">{statuses.map((s) => <StatusTag key={s} status={s} />)}</div>
+                <div className="flex flex-col gap-2">{statuses.map((s) => <StatusPath key={s} status={s} />)}</div>
+              </div>
+
+              <div id="janelas" className="grid scroll-mt-12 items-start gap-5 lg:grid-cols-[380px_1fr]">
+                <Window
+                  title="espaço · jardim do derby"
+                  onClose={() => toast('fecharia o painel', 'info')}
+                  footer={<div className="flex flex-wrap gap-2"><Button size="sm" onClick={() => setModal(true)}>Quero adotar</Button><Button size="sm" variant="link">diário da obra</Button></div>}
+                >
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-start gap-3">
+                      <Pixel art={spaceArt.jardim} className="size-12 shrink-0" title="Jardim" />
+                      <div className="min-w-0">
+                        <h3 className="text-[24px] leading-tight italic">Jardim do Derby</h3>
+                        <p className="text-[11px] tracking-[0.08em] text-ink-2 uppercase">jardim · público</p>
+                      </div>
+                    </div>
+                    <StatusPath status="em_obra" />
+                    <KeyValue rows={[['reportes', '3'], ['adotante', 'Assoc. Moradores do Derby'], ['prestador', 'Seu Antônio, jardineiro'], ['local', '-8.0569, -34.8987']]} />
+                    <div className="flex flex-col gap-3 border-t border-line pt-3">
+                      {[['Ana Lima', 'Mato alto e bancos quebrados perto do coreto.'], ['João Melo', 'Lixo acumulado na entrada da Rua do Futuro.']].map(([n, d]) => (
+                        <div key={n} className="flex flex-col gap-1">
+                          <p className="font-book text-[16px] leading-snug">{d}</p>
+                          <div className="flex gap-1">
+                            {['#c9b9a2', '#93a84a', '#79a6d6'].map((c) => <div key={c} className="size-14" style={{ background: c }} />)}
+                          </div>
+                          <p className="text-[11px] text-ink-3">{n} · 2 nov 2026</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Window>
+                <div className="flex flex-col gap-3">
+                  <Label>janelas, modal e avisos</Label>
+                  <p className="max-w-[56ch] text-ink-2">O painel do espaço é uma janela com barra de título. No celular ela sobe de baixo, sobre o mapa; no computador fica fixa à direita.</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="secondary" size="sm" onClick={() => setModal(true)}>Abrir modal</Button>
+                    <Button variant="secondary" size="sm" onClick={() => toast('reporte enviado. obrigado por cuidar da cidade.')}>Aviso ok</Button>
+                    <Button variant="secondary" size="sm" onClick={() => toast('a imagem pode ter no máximo 5 MB', 'error')}>Aviso de erro</Button>
+                  </div>
+                  <Hint>Os avisos aparecem no rodapé como uma linha de terminal.</Hint>
+                </div>
+              </div>
+            </Section>
+
+            <Section id="ilustracoes" n="VI" title="Ilustrações" note="pixel, um por tipo de espaço">
+              <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+                <Fig n="02" caption="a marca"><Pixel art={sprout} className="mx-auto aspect-square w-full p-2" title="Broto, a marca do Mester" /></Fig>
+                {types.map((t, i) => (
+                  <Fig key={t} n={String(i + 3).padStart(2, '0')} caption={spaceTypeLabel[t].toLowerCase()}>
+                    <Pixel art={spaceArt[t]} className="aspect-square w-full p-1" title={spaceTypeLabel[t]} />
+                  </Fig>
+                ))}
+              </div>
+              <Hint>Aparecem no cabeçalho do espaço, nos estados vazios e no mapa quando você aproxima.</Hint>
+            </Section>
+
+            <Section id="jornada" n="VII" title="Jornada" note="quem faz o quê">
+              <JourneyGraph />
+            </Section>
+
+            <footer className="flex items-center gap-3 border-t border-ink-1 pt-3 text-[11px] text-ink-3">
+              <Pixel art={sprout} className="w-5" />
+              <span>mester · sistema visual v0.3 · proposta para aprovação</span>
+            </footer>
+          </div>
+        </main>
       </div>
 
       <Modal
         open={modal}
         onClose={() => setModal(false)}
-        title="Quero adotar este espaço"
+        title="quero adotar"
         footer={<>
-          <Button variant="ghost" onClick={() => setModal(false)}>Cancelar</Button>
-          <Button onClick={() => { setModal(false); toast('interesse registrado!') }}>Confirmar</Button>
+          <Button variant="link" onClick={() => setModal(false)}>cancelar</Button>
+          <Button size="sm" onClick={() => { setModal(false); toast('interesse registrado') }}>Confirmar</Button>
         </>}
       >
-        <p className="text-[15px] leading-relaxed">
-          A equipe do Mester prepara uma proposta de revitalização com orçamento e te envia em até 5 dias úteis.
+        <p className="font-book text-[17px] leading-snug">
+          A equipe do Mester prepara uma proposta com plano de trabalho e orçamento e te envia em até 5 dias úteis. Nada é cobrado agora.
         </p>
-        <Hand pen="blue" tilt={-2} className="mt-3">nada é cobrado agora</Hand>
       </Modal>
     </div>
   )
+}
+
+function Label({ children }: { children: ReactNode }) {
+  return <p className="text-[11px] font-semibold tracking-[0.08em] text-ink-2 uppercase">{children}</p>
+}
+function Hint({ children }: { children: ReactNode }) {
+  return <p className="text-[12px] text-ink-3"><span aria-hidden>※ </span>{children}</p>
 }
 
 export function Showcase() {

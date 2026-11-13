@@ -2,24 +2,20 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { cn } from './cn'
 import { Spinner } from './Spinner'
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
-type Size = 'sm' | 'md' | 'lg'
-
-// Ao passar o mouse, o botão "levanta" e deixa um rastro de marca-texto
-const lift = 'enabled:hover:-translate-x-0.5 enabled:hover:-translate-y-0.5 enabled:hover:shadow-ink enabled:active:translate-0 enabled:active:shadow-none'
+type Variant = 'primary' | 'secondary' | 'link' | 'danger'
+type Size = 'sm' | 'md'
 
 const variants: Record<Variant, string> = {
-  primary: cn('bg-type-900 text-paper border-2 border-type-900', lift),
-  secondary: cn('bg-paper text-type-900 border-2 border-type-900', lift),
-  ghost: 'text-type-900 underline decoration-1 underline-offset-[6px] hover:decoration-marker hover:decoration-[3px]',
-  danger: cn('bg-paper text-pen-red border-2 border-pen-red', 'enabled:hover:bg-pen-red enabled:hover:text-paper'),
+  primary: 'bg-earth-900 text-paper border border-earth-900 enabled:hover:bg-olive-800 enabled:hover:border-olive-800',
+  secondary: 'bg-paper text-ink-1 border border-ink-1 enabled:hover:bg-lime',
+  // Link entre colchetes: [ ver proposta ]
+  link: 'text-ink-1 enabled:hover:bg-lime px-0.5',
+  danger: 'bg-paper text-alert border border-alert enabled:hover:bg-alert enabled:hover:text-paper',
 }
 
-// md e lg têm 44px+ de altura: alvo de toque confortável no celular
 const sizes: Record<Size, string> = {
-  sm: 'h-9 px-3 text-[13px] gap-1.5',
-  md: 'h-11 px-5 text-sm gap-2',
-  lg: 'h-13 px-6 text-[15px] gap-2',
+  sm: 'h-8 px-2.5 text-[12px] gap-1.5',
+  md: 'h-10 px-3.5 text-[13px] gap-2',
 }
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -27,50 +23,44 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: Size
   loading?: boolean
   block?: boolean
-  icon?: ReactNode
+  /** caractere à esquerda, ex.: "+", "→" */
+  glyph?: ReactNode
 }
 
-export function Button({ variant = 'primary', size = 'md', loading, block, icon, className, children, disabled, ...rest }: ButtonProps) {
+export function Button({ variant = 'primary', size = 'md', loading, block, glyph, className, children, disabled, ...rest }: ButtonProps) {
+  const isLink = variant === 'link'
   return (
     <button
       {...rest}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cn(
-        'inline-flex items-center justify-center font-type font-bold tracking-[0.08em] uppercase transition-[transform,box-shadow,background-color,color] duration-150 select-none',
+        'inline-flex items-center justify-center font-mono font-medium whitespace-nowrap transition-colors select-none',
         'disabled:cursor-not-allowed disabled:opacity-40',
-        variant !== 'ghost' && sizes[size], variant === 'ghost' && 'h-11 px-1 text-sm',
+        isLink ? 'h-8 text-[13px]' : sizes[size],
         variants[variant], block && 'w-full', className,
       )}
     >
-      {icon}
-      {children}
-      {loading && <Spinner />}
+      {isLink && <span aria-hidden className="text-ink-3">[</span>}
+      {loading ? <Spinner className="w-[1ch]" /> : glyph && <span aria-hidden>{glyph}</span>}
+      <span className={cn(isLink && 'px-1 underline decoration-ink-3 underline-offset-2')}>{children}</span>
+      {isLink && <span aria-hidden className="text-ink-3">]</span>}
     </button>
   )
 }
 
-type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { label: string; size?: 'sm' | 'md' }
+type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { label: string; glyph: string }
 
-// Botão só com ícone; o label vira aria-label e title
-export function IconButton({ label, size = 'md', className, children, ...rest }: IconButtonProps) {
+// Botão de um caractere ([×], [↓]); o label vira aria-label e title
+export function IconButton({ label, glyph, className, ...rest }: IconButtonProps) {
   return (
     <button
       {...rest}
       aria-label={label}
       title={label}
-      className={cn(
-        'inline-flex shrink-0 items-center justify-center text-type-600 transition-colors hover:bg-paper-2 hover:text-type-900',
-        size === 'md' ? 'size-11' : 'size-9',
-        className,
-      )}
+      className={cn('inline-flex size-8 shrink-0 items-center justify-center font-mono text-[14px] transition-colors hover:bg-lime hover:text-ink-1', className)}
     >
-      {children}
+      <span aria-hidden>{glyph}</span>
     </button>
   )
-}
-
-// "×" escrito à mão, para fechar folhas e avisos
-export function CloseMark({ className }: { className?: string }) {
-  return <span aria-hidden className={cn('font-hand text-[30px] leading-none', className)}>×</span>
 }

@@ -1,10 +1,9 @@
 import { useEffect, useRef, type ReactNode } from 'react'
-import { CloseMark, IconButton } from './Button'
-import { Tape } from './ink'
+import { IconButton } from './Button'
 
 type ModalProps = { open: boolean; onClose: () => void; title: ReactNode; children: ReactNode; footer?: ReactNode }
 
-// <dialog> nativo (prende o foco, fecha com Esc, devolve o foco) com cara de folha colada
+// <dialog> nativo (prende o foco, fecha com Esc, devolve o foco) com cara de janela
 export function Modal({ open, onClose, title, children, footer }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null)
 
@@ -20,15 +19,15 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
       ref={ref}
       onClose={onClose}
       onClick={(e) => { if (e.target === ref.current) onClose() }}
-      className="m-auto w-[calc(100%-2rem)] max-w-md overflow-visible border border-rule/70 bg-paper p-0 font-type text-type-900 shadow-lifted [--tilt:0.6deg] backdrop:bg-type-900/30 open:rotate-[0.6deg] open:animate-drop-in"
+      className="m-auto w-[calc(100%-2rem)] max-w-md border border-ink-1 bg-paper p-0 font-mono text-[13px] text-ink-1 shadow-window backdrop:bg-earth-900/40 open:animate-rise"
     >
-      <Tape className="-top-3 left-6 -rotate-3" />
-      <div className="flex items-start gap-2 px-6 pt-6">
-        <h2 className="flex-1 text-xl leading-tight font-bold">{title}</h2>
-        <IconButton label="Fechar" size="sm" onClick={onClose} className="-mt-1 -mr-2"><CloseMark /></IconButton>
+      <div className="flex h-8 items-center gap-2 bg-earth-900 pl-2.5 text-[11px] font-semibold tracking-[0.08em] text-earth-100 uppercase">
+        <span aria-hidden className="text-lime">■</span>
+        <h2 className="flex-1 truncate font-mono! text-[11px] font-semibold!">{title}</h2>
+        <IconButton label="Fechar" glyph="×" onClick={onClose} className="text-[16px]" />
       </div>
-      <div className="px-6 pt-3 pb-6">{children}</div>
-      {footer && <div className="flex justify-end gap-3 border-t border-dashed border-type-400 px-6 py-3">{footer}</div>}
+      <div className="p-4">{children}</div>
+      {footer && <div className="flex justify-end gap-2 border-t border-line bg-paper-2 px-4 py-2">{footer}</div>}
     </dialog>
   )
 }

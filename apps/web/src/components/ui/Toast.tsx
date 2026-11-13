@@ -1,17 +1,18 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react'
-import { CloseMark, IconButton } from './Button'
-import { Hand } from './ink'
+import { cn } from './cn'
+import { IconButton } from './Button'
+import { Cursor } from './Spinner'
 
 type Tone = 'success' | 'error' | 'info'
 type Toast = { id: number; tone: Tone; message: ReactNode }
 
 const ToastContext = createContext<((message: ReactNode, tone?: Tone) => void) | null>(null)
 
-const lead = { success: { pen: 'green', word: 'feito!' }, error: { pen: 'red', word: 'ops!' }, info: { pen: 'blue', word: 'obs.' } } as const
+const prefix = { success: ['ok', 'text-lime'], error: ['erro', 'text-orange'], info: ['obs', 'text-earth-300'] } as const
 
 let seq = 0
 
-// Tira de papel que aparece no rodapé: palavra à mão + recado datilografado. Some em 5s.
+// Aviso como linha de terminal no rodapé: "> ok  reporte enviado ▍". Some em 5s.
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
   const dismiss = (id: number) => setToasts((t) => t.filter((x) => x.id !== id))
@@ -27,17 +28,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-[2000] flex flex-col items-center gap-2 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-[2000] flex flex-col items-center gap-1.5 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
       >
         {toasts.map((t) => (
           <div
             key={t.id}
             role={t.tone === 'error' ? 'alert' : 'status'}
-            className="pointer-events-auto flex w-full max-w-sm rotate-[-0.8deg] items-center gap-3 border border-rule/70 bg-paper py-1.5 pr-1.5 pl-4 font-type text-[15px] text-type-900 shadow-lifted animate-strip-in"
+            className="pointer-events-auto flex w-full max-w-md items-center gap-2 bg-earth-900 py-1 pr-1 pl-3 font-mono text-[13px] text-earth-100 shadow-window animate-rise"
           >
-            <Hand pen={lead[t.tone].pen} tilt={-4} className="shrink-0 text-[24px]">{lead[t.tone].word}</Hand>
-            <span className="flex-1">{t.message}</span>
-            <IconButton label="Fechar aviso" size="sm" onClick={() => dismiss(t.id)}><CloseMark className="text-[24px]" /></IconButton>
+            <span aria-hidden className="text-earth-300">&gt;</span>
+            <span className={cn('font-semibold', prefix[t.tone][1])}>{prefix[t.tone][0]}</span>
+            <span className="min-w-0 flex-1">{t.message} <Cursor className="text-lime" /></span>
+            <IconButton label="Fechar aviso" glyph="×" onClick={() => dismiss(t.id)} className="text-earth-100" />
           </div>
         ))}
       </div>

@@ -12,3 +12,9 @@ body {
   background: var(--color-parchment);
   color: var(--color-ink);
 }
+
+/* Mapa em modo de marcação de ponto (reportar espaço); a classe fica no wrapper porque o MapContainer não atualiza className */
+.picking .leaflet-container,
+.picking .leaflet-interactive {
+  cursor: crosshair;
+}

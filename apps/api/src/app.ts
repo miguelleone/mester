@@ -5,6 +5,7 @@ import { serializerCompiler, validatorCompiler, type ZodTypeProvider } from 'fas
 import { env } from './env.js'
 import { authRoutes } from './routes/auth.js'
 import { spacesRoutes } from './routes/spaces.js'
+import { uploadsRoutes } from './routes/uploads.js'
 
 export function buildApp() {
   const app = Fastify({ logger: true }).withTypeProvider<ZodTypeProvider>()
@@ -17,6 +18,7 @@ export function buildApp() {
   app.get('/health', async () => ({ status: 'ok' }))
   app.register(authRoutes)
   app.register(spacesRoutes)
+  app.register(uploadsRoutes)
 
   return app
 }

@@ -60,12 +60,15 @@ type BandProps = {
   onToggle?: () => void
   children?: ReactNode
   dark?: boolean
+  /** classe do corpo aberto (padrão: alinhado ao título) */
+  bodyClassName?: string
+  id?: string
 }
 
 // Faixa numerada de cor chapada (lista de espaços). Abre para mostrar detalhes.
-export function Band({ n, title, status, open, onToggle, children, dark }: BandProps) {
+export function Band({ n, title, status, open, onToggle, children, dark, bodyClassName, id }: BandProps) {
   return (
-    <div>
+    <div id={id} className="scroll-mt-16">
       <button
         type="button"
         aria-expanded={open}
@@ -79,7 +82,7 @@ export function Band({ n, title, status, open, onToggle, children, dark }: BandP
         <span className="min-w-0 flex-1 truncate font-display text-[21px] leading-tight font-medium">{title}</span>
         <span aria-hidden className={cn('flex size-5 shrink-0 items-center justify-center rounded-full border text-[10px] transition-transform', dark ? 'border-paper' : 'border-ink-1', open && 'rotate-180')}>↓</span>
       </button>
-      {open && children && <div className="animate-rise bg-paper px-3 py-3 pl-10">{children}</div>}
+      {open && children && <div className={cn('animate-rise bg-paper', bodyClassName ?? 'px-3 py-3 pl-10')}>{children}</div>}
     </div>
   )
 }

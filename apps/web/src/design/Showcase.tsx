@@ -180,7 +180,7 @@ function Demo() {
   const [loading, setLoading] = useState(false)
 
   return (
-    <div className="ds min-h-dvh">
+    <div className="min-h-dvh">
       {/* Barra de topo */}
       <div className="sticky top-0 z-50 flex h-11 items-center gap-2 bg-paper/95 px-4 backdrop-blur">
         <Logo className="text-[22px]" />

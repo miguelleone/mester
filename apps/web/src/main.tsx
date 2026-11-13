@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
 import { AuthProvider } from './auth'
+import { ToastProvider } from './components/ui'
 // O showcase do design system é carregado à parte, só quando aberto
 const Showcase = lazy(() => import('./design/Showcase').then((m) => ({ default: m.Showcase })))
 
@@ -20,7 +21,9 @@ function Root() {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <Root />
+      <ToastProvider>
+        <Root />
+      </ToastProvider>
     </AuthProvider>
   </StrictMode>,
 )

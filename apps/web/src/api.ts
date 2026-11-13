@@ -49,13 +49,6 @@ export const statusLabel: Record<SpaceStatus, string> = {
   adotado: 'Adotado',
 }
 
-export const statusColor: Record<SpaceStatus, string> = {
-  reportado: '#b5452b',
-  com_proposta: '#c08a2e',
-  em_obra: '#3f6e8c',
-  adotado: '#4f5d2f',
-}
-
 async function request<T>(path: string, init: RequestInit & { token?: string | null } = {}): Promise<T> {
   const { token, ...rest } = init
   const headers: Record<string, string> = {}

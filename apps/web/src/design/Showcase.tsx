@@ -10,11 +10,18 @@ const statuses = Object.keys(statusLabel) as SpaceStatus[]
 const types = Object.keys(spaceTypeLabel) as SpaceType[]
 
 const pins = [
-  { x: 0.46, y: 0.3, n: 1, status: 'com_proposta' as const },
+  { x: 0.46, y: 0.31, n: 1, status: 'com_proposta' as const },
   { x: 0.58, y: 0.58, n: 2, status: 'reportado' as const },
-  { x: 0.3, y: 0.42, n: 3, status: 'em_obra' as const },
-  { x: 0.22, y: 0.2, n: 4, status: 'adotado' as const },
-  { x: 0.74, y: 0.74, n: 5, status: 'reportado' as const },
+  { x: 0.3, y: 0.44, n: 3, status: 'em_obra' as const },
+  { x: 0.2, y: 0.18, n: 4, status: 'adotado' as const },
+  { x: 0.74, y: 0.8, n: 5, status: 'reportado' as const },
+  { x: 0.12, y: 0.55, n: 6, status: 'reportado' as const },
+  { x: 0.67, y: 0.08, n: 7, status: 'com_proposta' as const },
+  { x: 0.83, y: 0.52, n: 8, status: 'adotado' as const },
+  { x: 0.4, y: 0.9, n: 9, status: 'reportado' as const },
+  { x: 0.53, y: 0.7, n: 10, status: 'em_obra' as const },
+  { x: 0.08, y: 0.32, n: 11, status: 'reportado' as const },
+  { x: 0.78, y: 0.27, n: 12, status: 'reportado' as const },
 ]
 
 /* ---------- peças do showcase ---------- */
@@ -25,7 +32,7 @@ function Section({ id, n, title, note, children }: { id: string; n: string; titl
     <section id={id} className="flex scroll-mt-16 flex-col gap-5">
       <div className="flex items-baseline gap-3 sm:gap-4">
         <span className="w-10 shrink-0 font-book text-[26px] leading-none">{n}</span>
-        <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4 border-b border-line pb-1.5">
+        <div className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-4">
           <h2 className="text-[30px] leading-none">{title}</h2>
           {note && <span className="font-mono text-[11px] tracking-[0.08em] text-ink-3 uppercase">{note}</span>}
         </div>
@@ -81,7 +88,7 @@ function PhoneMock() {
           </span>
         </div>
         <div className="mx-2 rounded-md bg-paper-2 px-1 py-1">
-          <AsciiMap rows={15} size={9} pins={pins.slice(0, 4)} />
+          <AsciiMap rows={24} size={7.5} pins={pins.slice(0, 4)} />
         </div>
         <p className="font-mono px-3 pt-2 pb-1 text-[10px] tracking-[0.08em] text-ink-2 uppercase">4 espaços perto de você</p>
         {list.map(([name, st], i) => (
@@ -175,16 +182,16 @@ function Demo() {
   return (
     <div className="ds min-h-dvh">
       {/* Barra de topo */}
-      <div className="sticky top-0 z-50 flex h-11 items-center gap-2 border-b border-line bg-paper/95 px-4 backdrop-blur">
+      <div className="sticky top-0 z-50 flex h-11 items-center gap-2 bg-paper/95 px-4 backdrop-blur">
         <Logo className="text-[22px]" />
         <span className="ml-2 rounded-full bg-paper-2 px-2.5 py-0.5 font-mono text-[11px] tracking-[0.06em] text-ink-2 uppercase">sistema visual</span>
-        <span className="rounded-full bg-st-adotado px-2.5 py-0.5 font-mono text-[11px] tracking-[0.06em] uppercase">v0.5 · wip</span>
+        <span className="rounded-full bg-st-adotado px-2.5 py-0.5 font-mono text-[11px] tracking-[0.06em] uppercase">v0.6 · wip</span>
         <span className="ml-auto hidden font-mono text-[11px] tracking-[0.06em] text-ink-3 uppercase sm:inline">Recife · nov 2026</span>
       </div>
 
       <div className="md:grid md:grid-cols-[232px_1fr]">
         {/* Índice em árvore ASCII */}
-        <aside className="border-b border-line bg-paper px-3 py-3 text-ink-1 md:sticky md:border-r md:border-b-0 md:top-11 md:h-[calc(100dvh-2.75rem)] md:overflow-y-auto">
+        <aside className="bg-paper px-4 py-3 text-ink-1 md:sticky md:top-11 md:h-[calc(100dvh-2.75rem)] md:overflow-y-auto">
           <details className="md:hidden">
             <summary className="font-mono cursor-pointer text-[12px]">▸ índice</summary>
             <Tree nodes={index} className="mt-2" />
@@ -226,8 +233,8 @@ function Demo() {
                   <p>O mapa deixa de ser um tile genérico: ruas viram ─ │, rios viram ~, praças viram ♣ e cada espaço vira um [01] na cor da sua etapa.</p>
                 </div>
               </div>
-              <Fig n="01" caption="Centro do Recife desenhado em caracteres. Cada [nº] é um espaço reportado, na cor da etapa em que está.">
-                <AsciiMap rows={30} pins={pins} />
+              <Fig n="01" caption="Centro do Recife desenhado em caracteres. Cada [nº] é um espaço reportado, na cor da etapa em que está; quadras, árvores, avenidas e bairros dão a densidade da cidade.">
+                <AsciiMap rows={44} size={10} pins={pins} />
               </Fig>
             </Section>
 
@@ -264,14 +271,14 @@ function Demo() {
             </Section>
 
             <Section id="tipos" n="IV" title="Tipos" note="gótica, Garamond e mono">
-              <div className="flex flex-col divide-y divide-line border-y border-line">
+              <div className="flex flex-col">
                 {[
                   ['Títulos', 'Grenze Gotisch 500', <p className="font-display text-[40px] leading-none font-medium">Praça Maciel Pinheiro</p>],
                   ['Textos', 'EB Garamond 16–17px', <p className="max-w-[52ch] font-book text-[17px] leading-snug">Mato alto perto do coreto e dois bancos quebrados. As crianças da escola ao lado usam a praça todo fim de tarde.</p>],
                   ['Rótulos e dados', 'JetBrains Mono 11–12px', <p className="font-mono text-[12px]">Enviar reporte · 12 reportes · -8.0631, -34.8711</p>],
                   ['Etiquetas', 'Mono 11px caixa alta', <p className="font-mono text-[11px] tracking-[0.08em] uppercase">Nome do espaço · status · fotos</p>],
                 ].map(([k, sub, sample]) => (
-                  <div key={k as string} className="grid gap-2 py-4 sm:grid-cols-[180px_1fr] sm:items-center">
+                  <div key={k as string} className="grid gap-2 py-3 sm:grid-cols-[180px_1fr] sm:items-center">
                     <div><p>{k}</p><p className="font-mono text-[11px] text-ink-3">{sub}</p></div>
                     <div className="min-w-0">{sample}</div>
                   </div>
@@ -416,9 +423,9 @@ function Demo() {
               <JourneyGraph />
             </Section>
 
-            <footer className="font-mono flex items-center gap-3 border-t border-line pt-3 text-[11px] text-ink-3">
+            <footer className="font-mono flex items-center gap-3 pt-3 text-[11px] text-ink-3">
               <Pixel art={sprout} className="w-5" />
-              <span>mester · sistema visual v0.5 · proposta para aprovação</span>
+              <span>mester · sistema visual v0.6 · proposta para aprovação</span>
             </footer>
           </div>
         </main>

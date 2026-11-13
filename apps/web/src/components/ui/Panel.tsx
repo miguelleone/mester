@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { cn } from './cn'
-import { IconButton } from './Button'
-import { CloseIcon } from './icons'
+import { CloseMark, IconButton } from './Button'
+import { Tape } from './ink'
 
 type PanelProps = {
   title: ReactNode
@@ -12,30 +12,30 @@ type PanelProps = {
   className?: string
 }
 
-// Painel sobre o mapa: folha que sobe de baixo no celular, coluna lateral no desktop
+// Bilhete colado sobre o mapa: folha que sobe de baixo no celular, folha solta e torta no desktop
 export function Panel({ title, eyebrow, onClose, children, footer, className }: PanelProps) {
   return (
     <section
       className={cn(
-        'flex max-h-[70dvh] flex-col overflow-hidden rounded-t-xl border border-line bg-surface shadow-overlay animate-sheet-in',
-        'md:max-h-none md:rounded-xl',
+        'relative flex max-h-[72dvh] flex-col border border-rule/70 bg-paper shadow-lifted animate-drop-in',
+        'md:max-h-none md:rotate-[-0.6deg] md:[--tilt:-0.6deg]',
         className,
       )}
     >
-      <div aria-hidden className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-line-strong md:hidden" />
-      <header className="flex shrink-0 items-start gap-2 px-5 pt-3 pb-3 md:pt-5">
+      <Tape className="-top-3 left-1/2 -translate-x-1/2 rotate-2" />
+      <header className="flex shrink-0 items-start gap-2 px-5 pt-5 pb-3 sm:px-6">
         <div className="min-w-0 flex-1">
-          {eyebrow && <p className="mb-1 text-[12px] font-semibold tracking-wider text-ink-500 uppercase">{eyebrow}</p>}
-          <h2 className="text-[22px] leading-tight font-semibold text-ink-900">{title}</h2>
+          {eyebrow && <p className="mb-1 text-[12px] font-bold tracking-[0.12em] text-type-600 uppercase">{eyebrow}</p>}
+          <h2 className="text-[22px] leading-tight">{title}</h2>
         </div>
         {onClose && (
           <IconButton label="Fechar" size="sm" onClick={onClose} className="-mt-1 -mr-2">
-            <CloseIcon />
+            <CloseMark />
           </IconButton>
         )}
       </header>
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5">{children}</div>
-      {footer && <footer className="shrink-0 border-t border-line bg-paper px-5 py-3">{footer}</footer>}
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 sm:px-6">{children}</div>
+      {footer && <footer className="shrink-0 border-t border-dashed border-type-400 px-5 py-3 sm:px-6">{footer}</footer>}
     </section>
   )
 }

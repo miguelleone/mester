@@ -1,10 +1,10 @@
 import { useEffect, useRef, type ReactNode } from 'react'
-import { IconButton } from './Button'
-import { CloseIcon } from './icons'
+import { CloseMark, IconButton } from './Button'
+import { Tape } from './ink'
 
 type ModalProps = { open: boolean; onClose: () => void; title: ReactNode; children: ReactNode; footer?: ReactNode }
 
-// <dialog> nativo: prende o foco, fecha com Esc e devolve o foco ao botão que abriu
+// <dialog> nativo (prende o foco, fecha com Esc, devolve o foco) com cara de folha colada
 export function Modal({ open, onClose, title, children, footer }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null)
 
@@ -20,14 +20,15 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
       ref={ref}
       onClose={onClose}
       onClick={(e) => { if (e.target === ref.current) onClose() }}
-      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-line bg-surface p-0 text-ink-900 shadow-overlay backdrop:bg-ink-900/40 backdrop:backdrop-blur-[2px] open:animate-sheet-in"
+      className="m-auto w-[calc(100%-2rem)] max-w-md overflow-visible border border-rule/70 bg-paper p-0 font-type text-type-900 shadow-lifted [--tilt:0.6deg] backdrop:bg-type-900/30 open:rotate-[0.6deg] open:animate-drop-in"
     >
-      <div className="flex items-start gap-2 px-6 pt-5">
-        <h2 className="flex-1 text-xl leading-tight font-semibold">{title}</h2>
-        <IconButton label="Fechar" size="sm" onClick={onClose} className="-mt-1 -mr-2"><CloseIcon /></IconButton>
+      <Tape className="-top-3 left-6 -rotate-3" />
+      <div className="flex items-start gap-2 px-6 pt-6">
+        <h2 className="flex-1 text-xl leading-tight font-bold">{title}</h2>
+        <IconButton label="Fechar" size="sm" onClick={onClose} className="-mt-1 -mr-2"><CloseMark /></IconButton>
       </div>
       <div className="px-6 pt-3 pb-6">{children}</div>
-      {footer && <div className="flex justify-end gap-2 border-t border-line bg-paper px-6 py-3">{footer}</div>}
+      {footer && <div className="flex justify-end gap-3 border-t border-dashed border-type-400 px-6 py-3">{footer}</div>}
     </dialog>
   )
 }

@@ -1,20 +1,230 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
+@import "@fontsource-variable/eb-garamond/wght.css";
+@import "@fontsource-variable/eb-garamond/wght-italic.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+@import "@fontsource-variable/grenze-gotisch/wght.css";
 
+/*
+ * Design system do Mester, v0.5 "atlas".
+ * Compacto e denso como um caderno de pesquisa: papel branco liso, superfícies suaves sem bordas pretas,
+ * títulos em Grenze Gotisch (serifa vertical, entre a romana e a gótica), textos em Garamond,
+ * mono só para rótulos, dados e o mapa ASCII, status em faixas de cor chapada e ilustrações em pixel.
+ * Paleta neutra tirada das referências: crema a café, pedras, musgo e tecido verde.
+ * Tokens viram utilitários do Tailwind (bg-paper, text-ink-2, bg-st-obra, font-mono...).
+ */
 @theme {
-  --color-parchment: #f4ecd8;
-  --color-ink: #2b2118;
-  --color-moss: #4f5d2f;
-  --font-serif: "Georgia", serif;
+  /* Tipografia: gótica serifada para títulos, Garamond para ler, mono para operar */
+  --font-display: "Grenze Gotisch Variable", "Grenze Gotisch", "EB Garamond Variable", Georgia, serif;
+  --font-book: "EB Garamond Variable", "EB Garamond", Garamond, Georgia, serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* 01. papel e tinta */
+  --color-paper: #ffffff;
+  --color-paper-2: #f6f4ef;
+  --color-line: #dcd8ce;
+  --color-ink-1: #1d1a16;
+  --color-ink-2: #5a554c;
+  --color-ink-3: #77716a;
+
+  /* 02. crema a café */
+  --color-earth-100: #efe9dc;
+  --color-earth-300: #d6c9b0;
+  --color-earth-500: #8a7358;
+  --color-earth-700: #4a3a2c;
+
+  /* 03. musgo (tecido verde) */
+  --color-olive-100: #e6e7d6;
+  --color-olive-400: #a5ad7c;
+  --color-olive-600: #6b7440;
+  --color-olive-800: #3e4a1c;
+
+  /* 04. pedras */
+  --color-stone: #a7b3b9;
+  --color-slate: #5f6f7c;
+  --color-rust: #c58f72;
+  --color-ochre: #cdb97e;
+
+  /* Realce de hover e seleção (crema), foco (musgo) e erro (ferrugem escura, AA sobre o papel) */
+  --color-hl: #ece6d3;
+  --color-focus: #5d6638;
+  --color-alert: #9a3a17;
+
+  /* Faixas de status: tons de pedra e terra, texto escuro por cima (contraste 6:1 ou mais) */
+  --color-st-reportado: #c58f72;
+  --color-st-proposta: #cdb97e;
+  --color-st-obra: #a7b3b9;
+  --color-st-adotado: #a5ad7c;
+
+  /* Água no mapa */
+  --color-water: #5f6f7c;
+
+  /* Cantos suaves e sombras leves no lugar de bordas pretas */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --shadow-soft: 0 1px 2px rgb(29 26 22 / 0.05), 0 6px 20px -8px rgb(29 26 22 / 0.16);
+  --shadow-float: 0 2px 4px rgb(29 26 22 / 0.06), 0 18px 40px -12px rgb(29 26 22 / 0.28);
+
+  --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-rise: rise 200ms var(--ease-out-soft);
+  --animate-blink: blink 1s steps(1) infinite;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
 }
 
-body {
-  background: var(--color-parchment);
-  color: var(--color-ink);
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Texto corrido em Garamond; mono só em rótulos, números, etiquetas e no mapa */
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink-1);
+    font-family: var(--font-book);
+    font-size: 16px;
+    line-height: 1.45;
+    font-variant-ligatures: none;
+    -webkit-font-smoothing: antialiased;
+  }
+  :is(h1, h2, h3) {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+  /* Foco: contorno musgo, bem visível */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-hl);
+    color: var(--color-ink-1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Pontilhado, para áreas de canvas */
+  .dot-paper {
+    background-image: radial-gradient(var(--color-line) 0.8px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  /* Pixel art nítida */
+  .pixelated {
+    image-rendering: pixelated;
+    shape-rendering: crispEdges;
+  }
+}
+
+/* ---------- Mapa (Leaflet) com a cara do design system ---------- */
+.leaflet-container {
+  background: var(--color-paper);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+/* Nomes de ruas por cima do ASCII: escurece só o texto, sem cobrir os caracteres */
+.map-labels {
+  mix-blend-mode: multiply;
+  opacity: 0.9;
+}
+/* Mapa comum, apagado para combinar com o papel */
+.map-plain .leaflet-tile-pane {
+  filter: grayscale(0.85) sepia(0.12) contrast(0.92) brightness(1.04);
+}
+.leaflet-bar {
+  border: 0 !important;
+  border-radius: 999px !important;
+  box-shadow: var(--shadow-soft) !important;
+  overflow: hidden;
+}
+.leaflet-bar a {
+  width: 28px !important;
+  height: 28px !important;
+  line-height: 28px !important;
+  border: 0 !important;
+  background: var(--color-paper);
+  color: var(--color-ink-1);
+  font: 500 15px var(--font-mono);
+}
+.leaflet-bar a:hover {
+  background: var(--color-hl);
+}
+.leaflet-bar a.leaflet-disabled {
+  color: var(--color-ink-3);
+  background: var(--color-paper);
+}
+.leaflet-control-attribution {
+  font: 10px var(--font-mono);
+  color: var(--color-ink-2);
+  background: rgb(255 255 255 / 0.85) !important;
+  border-top-left-radius: var(--radius-sm);
+}
+.leaflet-control-attribution a {
+  color: var(--color-ink-2);
+  text-decoration: underline;
+}
+.leaflet-tooltip {
+  padding: 2px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-ink-1);
+  color: var(--color-paper);
+  font: 500 11.5px var(--font-mono);
+  box-shadow: var(--shadow-soft);
+}
+.leaflet-tooltip-top::before {
+  border-top-color: var(--color-ink-1);
+}
+/* Pinos [01] na cor da etapa */
+.map-pin-anchor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.map-pin {
+  padding: 0 1px;
+  border-radius: 3px;
+  background: var(--pin);
+  color: var(--color-ink-1);
+  font: 700 12px/16px var(--font-mono);
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  box-shadow: 0 0 0 1.5px var(--color-paper), var(--shadow-soft);
+  transition: transform 120ms var(--ease-out-soft);
+}
+.leaflet-marker-icon:hover .map-pin,
+.leaflet-marker-icon:focus-visible .map-pin {
+  transform: scale(1.15);
+}
+.map-pin.is-selected {
+  background: var(--color-ink-1);
+  color: var(--color-paper);
+  transform: scale(1.2);
+}
+.map-pin.is-draft {
+  background: var(--color-ink-1);
+  color: var(--color-paper);
 }
 
 /* Mapa em modo de marcação de ponto (reportar espaço); a classe fica no wrapper porque o MapContainer não atualiza className */
 .picking .leaflet-container,
 .picking .leaflet-interactive {
   cursor: crosshair;
+}
+/* Marcando um ponto, os pinos não roubam o toque */
+.picking .map-pin-anchor {
+  pointer-events: none;
 }

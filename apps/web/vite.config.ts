@@ -9,6 +9,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), tailwindcss()],
+    // Variáveis VITE_* também vêm do .env da raiz (ex.: VITE_MAP_TILES)
+    envDir: '../..',
     server: {
       proxy: { '/api': { target: `http://localhost:${apiPort}`, rewrite: (p) => p.replace(/^\/api/, '') } },
     },
